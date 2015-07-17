@@ -7,10 +7,11 @@ OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class SurveyIteration < ActiveRecord::Base
   OAUTH_CALLBACK_URL = 'https://www.example.com/oauth2callback'
-  SPREADSHEET_ID = '1R0X0L9ouA9ZQl6lowXGJBlc5HbU6VHmGULb9dPKfcNM'
-  WORKSHEET_INDEX = 0
+  SPREADSHEET_ID  = '1R0X0L9ouA9ZQl6lowXGJBlc5HbU6VHmGULb9dPKfcNM'
+  WORKSHEET_TITLE = 'Art Submissions (updated)'
 
-  has_many :survey_questions
+  has_many :survey_pages
+  has_many :survey_questions, :through => :survey_pages
   after_initialize :import_questions_from_google!
 
   @@gd_session = nil
@@ -103,15 +104,26 @@ class SurveyIteration < ActiveRecord::Base
     end
 
     # Creates a session.
-    @@gd_session = GoogleDrive.login_with_oauth @@google_access_token
+    begin
+      @@gd_session = GoogleDrive.login_with_oauth @@google_access_token
+    rescue Google::APIClient::AuthorizationError
+      clear_google_tokens!
+      obtain_google_drive_session!
+    end
   end
 
   def self.google_sheet
-    self.google_drive_session.spreadsheet_by_key SPREADSHEET_ID
+    begin
+      self.google_drive_session.spreadsheet_by_key SPREADSHEET_ID
+    rescue Google::APIClient::AuthorizationError
+      self.clear_google_tokens!
+      self.obtain_google_drive_session!
+      self.google_sheet
+    end
   end
 
   def self.google_worksheet
-    self.google_sheet.worksheets[ WORKSHEET_INDEX ]
+    self.google_sheet.worksheets.find{|ws| ws.title == WORKSHEET_TITLE }
   end
 
   def import_questions_from_google!
@@ -123,8 +135,7 @@ class SurveyIteration < ActiveRecord::Base
         heading = header_row[i]
         cell_hash[heading] = cell
       end
-      # self.survey_questions << SurveyQuestion.new(:metadata => cell_hash)
-      self.survey_questions.build :metadata => cell_hash
+      self.survey_pages.build :metadata => cell_hash
     end
     true
   end
@@ -141,13 +152,11 @@ class SurveyIteration < ActiveRecord::Base
       :status => 'launched'
     }
   end
-
   def export_to_survey_gizmo!
     survey = SurveyGizmo::API::Survey.create self.sg_survey_params
     self.sg_survey_id = survey.id
-    self.survey_questions.each(&:export_to_survey_gizmo!)
+    self.survey_pages.first(5).each(&:export_to_survey_gizmo!)
   end
-
   def delete_from_survey_gizmo!
     return false unless self.sg_survey_id.present?
     self.sg_survey.destroy

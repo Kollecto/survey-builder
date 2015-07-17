@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :survey_options
+  resources :survey_pages
   resources :survey_iterations
   resources :survey_questions
   root 'home#home'

@@ -1,0 +1,2 @@
+module SurveyPagesHelper
+end

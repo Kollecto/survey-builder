@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150717194108) do
+ActiveRecord::Schema.define(version: 20150717220412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,12 +29,40 @@ ActiveRecord::Schema.define(version: 20150717194108) do
     t.string   "sg_survey_id"
   end
 
-  create_table "survey_questions", force: :cascade do |t|
+  create_table "survey_options", force: :cascade do |t|
+    t.string   "title"
+    t.string   "reporting_value"
     t.text     "metadata"
+    t.string   "sg_option_id"
+    t.integer  "survey_question_id"
+    t.integer  "survey_page_id"
     t.integer  "survey_iteration_id"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+  end
+
+  create_table "survey_pages", force: :cascade do |t|
+    t.string   "title"
+    t.text     "description"
+    t.string   "sg_page_id"
+    t.integer  "survey_iteration_id"
+    t.text     "metadata"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  create_table "survey_questions", force: :cascade do |t|
+    t.text     "metadata"
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
     t.string   "sg_question_id"
+    t.integer  "survey_iteration_id"
+    t.integer  "survey_page_id"
+    t.string   "title"
+    t.string   "question_type",              default: "radio"
+    t.integer  "previous_question_id"
+    t.integer  "parent_question_id"
+    t.string   "parent_question_dependency"
   end
 
 end
