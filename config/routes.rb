@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :survey_iterations
+  resources :survey_questions
   root 'home#home'
 
   # The priority is based upon order of creation: first created -> highest priority.

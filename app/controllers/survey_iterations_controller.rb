@@ -1,0 +1,2 @@
+class SurveyIterationsController < ApplicationController
+end

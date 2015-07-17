@@ -60,7 +60,10 @@ gem 'apitome'
 gem 'api-auth'
 gem 'responders'
 gem 'permanent_records'
+
+# App Specific
 gem 'survey-gizmo-ruby'
+gem 'google_drive'
 
 group :development do
   gem 'better_errors'
