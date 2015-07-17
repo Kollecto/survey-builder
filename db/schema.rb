@@ -11,15 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150717004846) do
+ActiveRecord::Schema.define(version: 20150717194108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "survey_iterations", force: :cascade do |t|
+  create_table "survey_interations", force: :cascade do |t|
     t.string   "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "survey_iterations", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.string   "sg_survey_id"
   end
 
   create_table "survey_questions", force: :cascade do |t|
@@ -27,6 +34,7 @@ ActiveRecord::Schema.define(version: 20150717004846) do
     t.integer  "survey_iteration_id"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+    t.string   "sg_question_id"
   end
 
 end
