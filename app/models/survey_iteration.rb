@@ -3,6 +3,7 @@ require 'google/api_client/client_secrets'
 require 'google/api_client/auth/installed_app'
 require "google_drive"
 require 'survey-gizmo-ruby'
+
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class SurveyIteration < ActiveRecord::Base
@@ -157,7 +158,8 @@ class SurveyIteration < ActiveRecord::Base
     puts 'Exporting survey!'
     survey = SurveyGizmo::API::Survey.create self.sg_survey_params
     self.sg_survey_id = survey.id
-    self.survey_pages.first(108).each(&:export_to_survey_gizmo!)
+    self.survey_pages.select{|sp| sp.metadata['week'] == 'Week 1.5' }
+                     .each(&:export_to_survey_gizmo!)
   end
   def delete_from_survey_gizmo!
     return false unless self.sg_survey_id.present?
