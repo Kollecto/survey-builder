@@ -22,6 +22,7 @@ class SurveyOption < ActiveRecord::Base
     }.dup.merge(metadata.present? ? metadata[:sg_params] || {} : {})
   end
   def export_to_survey_gizmo!
+    puts "Exporting survey option!"
     option = SurveyGizmo::API::Option.create sg_option_params
     self.sg_option_id = option.id
   end

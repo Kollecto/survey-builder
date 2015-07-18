@@ -10,6 +10,7 @@ class SurveyIteration < ActiveRecord::Base
   SPREADSHEET_ID  = '1R0X0L9ouA9ZQl6lowXGJBlc5HbU6VHmGULb9dPKfcNM'
   WORKSHEET_TITLE = 'Art Submissions (updated)'
 
+  serialize :worksheet_header_row
   has_many :survey_pages
   has_many :survey_questions, :through => :survey_pages
   after_initialize :import_questions_from_google!
@@ -128,11 +129,11 @@ class SurveyIteration < ActiveRecord::Base
 
   def import_questions_from_google!
     rows = self.class.google_worksheet.rows
-    header_row = rows.first
+    self.worksheet_header_row = rows.first
     rows[1..-1].each do |cells|
       cell_hash = {}
       cells.each_with_index do |cell, i|
-        heading = header_row[i]
+        heading = self.worksheet_header_row[i]
         cell_hash[heading] = cell
       end
       self.survey_pages.build :metadata => cell_hash
@@ -153,13 +154,26 @@ class SurveyIteration < ActiveRecord::Base
     }
   end
   def export_to_survey_gizmo!
+    puts 'Exporting survey!'
     survey = SurveyGizmo::API::Survey.create self.sg_survey_params
     self.sg_survey_id = survey.id
-    self.survey_pages.first(5).each(&:export_to_survey_gizmo!)
+    self.survey_pages.first(108).each(&:export_to_survey_gizmo!)
   end
   def delete_from_survey_gizmo!
     return false unless self.sg_survey_id.present?
     self.sg_survey.destroy
+  end
+
+  def self.publish_from_google_drive!(attrs={})
+    attrs[:title] ||= "Kollecto Survey #{Time.now.to_s}"
+    puts "Publishing #{attrs[:title]}"
+    instance = new attrs
+    instance.export_to_survey_gizmo!
+    puts
+    puts "SurveyGizmo export complete!"
+    puts "Edit URL: #{instance.sg_survey.links['edit']}"
+    puts
+    instance
   end
 
 end
