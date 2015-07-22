@@ -22,5 +22,18 @@ module KollectoSgSurveyBuilder
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    ActionMailer::Base.delivery_method = :smtp # be sure to choose SMTP delivery
+    ActionMailer::Base.smtp_settings = {
+        :address              => "smtp.mandrillapp.com",
+        :port                 => 25,
+        :domain               => "kollecto.sb.mackinleysmith.com",
+        :user_name            => Rails.application.secrets.mandrill_user_name,
+        :password             => Rails.application.secrets.mandrill_api_key,
+        :authentication       => 'login',
+        :enable_starttls_auto =>  true,
+        :openssl_verify_mode => 'none'
+    }
+
   end
 end
