@@ -8,10 +8,23 @@
         %span.icon-bar
       = link_to "Kollecto Survey Builder", root_path, class: "navbar-brand"
     #navbar.collapse.navbar-collapse
-      -# %ul.nav.navbar-nav
-      -#   %li.active
-      -#     %a{href: "#"} Home
-      -#   %li
-      -#     %a{href: "#about"} About
-      -#   %li
-      -#     %a{href: "#contact"} Contact
+      %ul.nav.navbar-nav.navbar-right
+        - if user_signed_in?
+          %li.dropdown
+            = link_to '#', :class => 'dropdown-toggle', :data => {:toggle => 'dropdown'} do
+              = current_user.first_name
+              %span.glyphicon.glyphicon-user
+              - if current_user.admin?
+                %span.fa.fa-bolt
+              %span.caret
+            %ul.dropdown-menu.main-nav-dropdown{:role => 'menu'}
+              - if current_user.admin?
+                %li.dropdown-header{:role => 'presentation'} Backstage
+                -# = active_link_to 'User Management', admin_users_path, :wrap_tag => :li
+                %li.divider
+              %li.dropdown-header{:role => 'presentation'} Your Account
+              = active_link_to 'Edit Profile', edit_user_registration_path, :wrap_tag => :li
+              = active_link_to 'Sign Out', destroy_user_session_path, :method => :delete, :wrap_tag => :li
+        - else
+          = active_link_to 'Sign In', new_user_session_path, :wrap_tag => :li
+          -# = active_link_to 'Sign Up', new_user_registration_path, :wrap_tag => :li

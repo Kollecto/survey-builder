@@ -1,4 +1,5 @@
 class SurveyPage < ActiveRecord::Base
+  include SurveyPageNavigation
 
   serialize :metadata
   belongs_to :survey_iteration
@@ -15,6 +16,7 @@ class SurveyPage < ActiveRecord::Base
   end
   
   def initialize_questions
+    return if self.survey_questions.any?
     self.survey_questions.build :survey_iteration => self.survey_iteration,
       :title => 'Do you like this?',
       :survey_options_attributes => [ {

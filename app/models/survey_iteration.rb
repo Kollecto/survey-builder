@@ -12,9 +12,14 @@ class SurveyIteration < ActiveRecord::Base
   WORKSHEET_TITLE = 'Art Submissions (updated)'
 
   serialize :worksheet_header_row
+
   has_many :survey_pages
   has_many :survey_questions, :through => :survey_pages
-  after_initialize :import_questions_from_google!
+
+  before_validation :ensure_title_set
+  before_validation :import_questions_from_google!
+
+  validates_presence_of :title
 
   @@gd_session = nil
   @@google_access_token = nil
@@ -77,7 +82,7 @@ class SurveyIteration < ActiveRecord::Base
     return @@gd_session if @@gd_session.present?
     obtain_google_drive_session!
   end
-  def self.obtain_google_drive_session!
+  def self.obtain_google_drive_session!(return_auth_uri=false)
     fetch_google_tokens_from_cache
 
     unless @@google_access_token
@@ -93,6 +98,7 @@ class SurveyIteration < ActiveRecord::Base
       ]
       # auth.additional_parameters = {'access_type' => 'offline'}
       auth.redirect_uri = OAUTH_CALLBACK_URL
+      return auth.authorization_uri if return_auth_uri
       print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
       print("2. Enter the authorization code shown in the page: ")
       code = $stdin.gets.chomp
@@ -104,6 +110,7 @@ class SurveyIteration < ActiveRecord::Base
 
       write_google_tokens_to_cache!
     end
+    return if return_auth_uri
 
     # Creates a session.
     begin
@@ -167,15 +174,26 @@ class SurveyIteration < ActiveRecord::Base
   end
 
   def self.publish_from_google_drive!(attrs={})
-    attrs[:title] ||= "Kollecto Survey #{Time.now.to_s}"
-    puts "Publishing #{attrs[:title]}"
     instance = new attrs
+    instance.send :ensure_title_set
+    puts "Publishing #{ instance.title }"
     instance.export_to_survey_gizmo!
     puts
     puts "SurveyGizmo export complete!"
     puts "Edit URL: #{instance.sg_survey.links['edit']}"
     puts
     instance
+  end
+
+  # class GoogleAuthRequiredError < StandardError
+  #   attr_reader :auth_uri
+  #   def initialize(auth_uri); @auth_uri = auth_uri; end
+  #   def message; "Google authorization is required."; end
+  # end
+
+  private
+  def ensure_title_set
+    self.title ||= "Kollecto Survey #{Time.now.to_s}"
   end
 
 end

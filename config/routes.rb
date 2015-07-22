@@ -1,9 +1,17 @@
 Rails.application.routes.draw do
 
+  resources :taste_categories
+  resources :survey_submissions do
+    get 'take_survey', on: :member, as: 'take'
+  end
   resources :survey_options
   resources :survey_pages
   resources :survey_iterations
   resources :survey_questions
+
+  devise_for :users, controllers: { registrations: 'registrations' }
+
+  get 'start' => 'survey_submissions#start'
   root 'home#home'
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -1,0 +1,31 @@
+@import "font-awesome-sprockets";
+@import "font-awesome";
+@import "bootstrap-variables";
+
+// Fontawesome Chrome Fix
+.fa { -webkit-animation: show 1s 1; }
+@-webkit-keyframes show {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+table.table { &>thead, &>tbody { &>tr { &>th, &>td { vertical-align: middle; } } } }
+
+input.boolean[type=checkbox] {
+  margin-top:4px;
+  margin-bottom:4px;
+}
+input.radio_buttons[type=radio] {
+  margin-top:3px;
+  margin-bottom:3px;
+}
+.checkbox .help-block {
+  padding-left: 20px;
+  font-size: smaller;
+}
+
+.form-frame {
+  padding-top: 50px;
+  @media (max-width: $screen-xs-max) { padding-top: 20px; }
+}
+

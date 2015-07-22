@@ -22,13 +22,14 @@
     = javascript_include_tag   'application'
     - if content_for? :header_js
       = content_for :header_js
+
+    = csrf_meta_tags
   %body
     = render 'shared/main_nav'
-    .container
-      - flash.each do |name, msg|
-        = content_tag :div, class: "alert alert-#{name == :error ? "danger" : "success" } alert-dismissable", role: "alert" do
-          %button.close{type: "button", data: {dismiss: "alert"} }
-            %span{aria: {hidden: "true"} } &times;
-            %span.sr-only Close
-          = msg
+    - if content_for? :before_container
+      = content_for :before_container
+    = smart_container do
+      = render_flash_messages :style => 'margin-top: 15px'
       = yield
+    - if content_for? :after_container
+      = content_for :after_container

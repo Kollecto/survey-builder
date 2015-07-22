@@ -1,0 +1,31 @@
+= default_frame do
+  .page-header
+    %h1
+      .pull-right
+        - if @prev_page.present?
+          = link_to take_survey_submission_path(@survey_submission, 
+            survey_page: @prev_page), class: 'survey-nav-arrow' do
+            %span.glyphicon.glyphicon-chevron-left
+        - if @next_page.present?
+          = link_to take_survey_submission_path(@survey_submission,
+            survey_page: @next_page), class: 'survey-nav-arrow' do
+            %span.glyphicon.glyphicon-chevron-right
+      = @survey_page.title
+  .text-center= @survey_page.description.html_safe
+  = form_frame :medium do
+    %hr
+    = simple_form_for :submission, method: :get,
+      url: take_survey_submission_path(@survey_submission) do |f|
+      - @survey_page.survey_questions.each do |q|
+        - if %w(checkbox radio).include? q.question_type
+          = f.input :"question_#{q.id}", as: q.simpleform_input_type,
+            label: q.title.html_safe,
+            collection: q.survey_options.map{|o| [o.title.html_safe, o.id] },
+            checked: @survey_submission.answer_for(q)
+        - else
+          = f.input :"question_#{q.id}", as: q.simpleform_input_type,
+            label: q.title.html_safe,
+            input_html: { value: @survey_submission.answer_for(q) }
+      %hr
+      = f.submit 'Proceed', class: 'btn btn-lg btn-success btn-block'
+  %br

@@ -1,0 +1,16 @@
+= default_frame do
+  = form_frame do
+    %h2 Log in
+    %hr
+    = simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+      = f.error_notification
+      .form-inputs
+        = f.input :email, required: false, autofocus: !params.key?(:email),
+              input_html: params.key?(:email) ? {:value => params[:email]} : {}
+        = f.input :password, required: false, autofocus: params.key?(:email)
+        = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
+      .form-actions
+        %hr
+        = f.button :submit, "Log in", :class => 'btn btn-success btn-lg btn-block'
+    %hr
+    = render "devise/shared/links"

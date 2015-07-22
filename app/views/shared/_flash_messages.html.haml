@@ -1,0 +1,14 @@
+- if flash.any?
+  .flash-messages-wrapper{:data => {:render_count => render_count}}
+    - flash.each do |type, msg|
+      - type = 'danger' if type == 'error'
+      - type = 'info' if type == 'notice'
+      - type = 'warning' if type == 'alert'
+      = content_tag :div, :class => "alert alert-#{type} alert-dismissable", :style => settings[:style] do
+        %button.close{:type => 'button', :data => {:dismiss => 'alert'}, :aria => {:hidden => 'true'} } &times;
+        = msg
+  - if render_count > 1
+    :javascript
+      $(document).ready(function(){
+        $('.flash-messages-wrapper[data-render-count=#{render_count - 1}]').remove();
+      });

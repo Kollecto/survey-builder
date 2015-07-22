@@ -61,4 +61,12 @@ class SurveyQuestion < ActiveRecord::Base
     self.survey_options.each(&:export_to_survey_gizmo!)
   end
 
+  def simpleform_input_type
+    case question_type
+    when 'radio' then :radio_buttons
+    when 'checkbox' then :check_boxes
+    else :string
+    end
+  end
+
 end

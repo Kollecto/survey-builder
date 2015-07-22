@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150717230147) do
+ActiveRecord::Schema.define(version: 20150721222217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,10 +48,10 @@ ActiveRecord::Schema.define(version: 20150717230147) do
 
   create_table "survey_questions", force: :cascade do |t|
     t.text     "metadata"
+    t.integer  "survey_iteration_id"
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.string   "sg_question_id"
-    t.integer  "survey_iteration_id"
     t.integer  "survey_page_id"
     t.string   "title"
     t.string   "question_type",              default: "radio"
@@ -59,5 +59,61 @@ ActiveRecord::Schema.define(version: 20150717230147) do
     t.integer  "parent_question_id"
     t.string   "parent_question_dependency"
   end
+
+  create_table "survey_submissions", force: :cascade do |t|
+    t.integer  "user_id"
+    t.text     "submission"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.integer  "survey_iteration_id"
+    t.integer  "current_page_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  create_table "taste_categories", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "taste_categories_users", id: false, force: :cascade do |t|
+    t.integer "user_id",           null: false
+    t.integer "taste_category_id", null: false
+  end
+
+  add_index "taste_categories_users", ["taste_category_id", "user_id"], name: "index_taste_categories_users_on_taste_category_id_and_user_id", using: :btree
+  add_index "taste_categories_users", ["user_id", "taste_category_id"], name: "index_taste_categories_users_on_user_id_and_taste_category_id", using: :btree
+
+  create_table "users", force: :cascade do |t|
+    t.string   "email",                  default: "",     null: false
+    t.string   "encrypted_password",     default: ""
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          default: 0,      null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet     "current_sign_in_ip"
+    t.inet     "last_sign_in_ip"
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.string   "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer  "invitation_limit"
+    t.integer  "invited_by_id"
+    t.string   "invited_by_type"
+    t.integer  "invitations_count",      default: 0
+    t.string   "first_name"
+    t.string   "role",                   default: "User"
+  end
+
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
+  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
+  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
 end
