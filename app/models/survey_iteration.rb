@@ -7,7 +7,7 @@ require 'survey-gizmo-ruby'
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class SurveyIteration < ActiveRecord::Base
-  OAUTH_CALLBACK_URL = 'https://www.example.com/oauth2callback'
+  OAUTH_CALLBACK_URI = 'https://www.example.com/oauth2callback'
   SPREADSHEET_ID  = '1R0X0L9ouA9ZQl6lowXGJBlc5HbU6VHmGULb9dPKfcNM'
   WORKSHEET_TITLE = 'Art Submissions (updated)'
 
@@ -82,43 +82,60 @@ class SurveyIteration < ActiveRecord::Base
     return @@gd_session if @@gd_session.present?
     obtain_google_drive_session!
   end
+  def self.obtain_google_drive_session(code=nil)
+    begin
+      obtain_google_drive_session!
+    rescue GoogleAuthRequiredError
+      auth = build_google_auth_obj
+      if code.nil?
+        print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
+        print("2. Enter the authorization code shown in the page: ")
+        code = $stdin.gets.chomp
+      end
+      do_google_auth_with_code! code, auth
+      obtain_google_drive_session!
+    end
+  end
   def self.obtain_google_drive_session!(return_auth_uri=false)
     fetch_google_tokens_from_cache
-
-    unless @@google_access_token
-      # Authorizes with OAuth and gets an access token.
-      client = Google::APIClient.new
-      auth = client.authorization
-      auth.client_id = Rails.application.secrets.google_client_id
-      auth.client_secret = Rails.application.secrets.google_client_secret
-      auth.scope = [
-        "https://www.googleapis.com/auth/drive",
-        "https://spreadsheets.google.com/feeds/" # ,
-        # "email", "profile"
-      ]
-      # auth.additional_parameters = {'access_type' => 'offline'}
-      auth.redirect_uri = OAUTH_CALLBACK_URL
-      return auth.authorization_uri if return_auth_uri
-      print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
-      print("2. Enter the authorization code shown in the page: ")
-      code = $stdin.gets.chomp
-      auth.code = code
-      # get_google_tokens_from_code! code
-      auth.fetch_access_token!
-      @@google_access_token = auth.access_token
-      @@google_auth_expires_at = auth.expires_at
-
-      write_google_tokens_to_cache!
-    end
-    return if return_auth_uri
+    raise GoogleAuthRequiredError.new unless @@google_access_token
 
     # Creates a session.
     begin
       @@gd_session = GoogleDrive.login_with_oauth @@google_access_token
     rescue Google::APIClient::AuthorizationError
       clear_google_tokens!
-      obtain_google_drive_session!
+      # obtain_google_drive_session!
+      raise GoogleAuthRequiredError.new
     end
+  end
+  def self.build_google_auth_obj
+    client = Google::APIClient.new
+    auth = client.authorization
+    auth.client_id = Rails.application.secrets.google_client_id
+    auth.client_secret = Rails.application.secrets.google_client_secret
+    auth.redirect_uri = Rails.application.secrets.google_callback_uri || 
+                        OAUTH_CALLBACK_URI
+    auth.scope = [
+      "https://www.googleapis.com/auth/drive",
+      "https://spreadsheets.google.com/feeds/" # ,
+      # "email", "profile"
+    ]
+    # auth.additional_parameters = {'access_type' => 'offline'}
+    auth
+  end
+  def self.do_google_auth_with_code!(code, auth=nil)
+    auth ||= build_google_auth_obj
+    auth.code = code
+    # get_google_tokens_from_code! code
+    auth.fetch_access_token!
+    return false unless auth.access_token.present?
+
+    @@google_access_token = auth.access_token
+    @@google_auth_expires_at = auth.expires_at
+
+    write_google_tokens_to_cache!
+    true
   end
 
   def self.google_sheet
@@ -185,11 +202,11 @@ class SurveyIteration < ActiveRecord::Base
     instance
   end
 
-  # class GoogleAuthRequiredError < StandardError
-  #   attr_reader :auth_uri
-  #   def initialize(auth_uri); @auth_uri = auth_uri; end
-  #   def message; "Google authorization is required."; end
-  # end
+  class GoogleAuthRequiredError < StandardError
+    # attr_reader :auth_uri
+    # def initialize(auth_uri); @auth_uri = auth_uri; end
+    def message; "Google authorization is required."; end
+  end
 
   private
   def ensure_title_set

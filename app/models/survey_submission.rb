@@ -31,7 +31,7 @@ class SurveySubmission < ActiveRecord::Base
   private
   def set_started_at; self.started_at ||= Time.now; end
   def attach_survey_iteration
-    self.survey_iteration ||= SurveyIteration.last
+    self.survey_iteration ||= SurveyIteration.last || SurveyIteration.create!
     self.current_page ||= survey_iteration.survey_pages.first
   end
 

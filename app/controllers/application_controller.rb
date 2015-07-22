@@ -8,6 +8,11 @@ class ApplicationController < ActionController::Base
     method = "#{resource}_params"
     params[resource] &&= send(method) if respond_to?(method, true)
   end
+  rescue_from SurveyIteration::GoogleAuthRequiredError do
+    session[:return_to] = request.url
+    auth = SurveyIteration.build_google_auth_obj
+    redirect_to auth.authorization_uri.to_s
+  end
 
   protected
   def configure_permitted_parameters
