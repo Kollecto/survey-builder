@@ -84,7 +84,7 @@ Rails.application.configure do
 
   config.middleware.use ExceptionNotification::Rack, {
     :email => {
-      :email_prefix => "[Inquire] ",
+      :email_prefix => "[KollectoSB] ",
       :sender_address => %{"notifier" <notifier@#{config.action_controller.asset_host}>},
       :exception_recipients => %w{m4g1ckmu5hr00m@gmail.com}
     }
