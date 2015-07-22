@@ -32,7 +32,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 gem 'capistrano-rails', group: :development
 gem 'capistrano-bundler', group: :development
-gem 'capistrano-passenger', group: :development
+gem 'capistrano-passenger', '~> 0.0.2', group: :development
 gem 'capistrano-faster-assets', group: :development
 gem 'rvm1-capistrano3', :require => false
 gem 'capistrano'
