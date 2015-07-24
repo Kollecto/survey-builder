@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  ROLES = %w( User Admin )
+
   attr_accessor :taste_category_name
 
   has_many :survey_submissions
@@ -18,6 +20,8 @@ class User < ActiveRecord::Base
   scope :nonadmins,   -> { where('users.role != ?', 'Admin')  }
 
   def admin?; self.role == 'Admin'; end
+
+  def name; self.first_name; end
 
   private
   def make_admin_if_first_user

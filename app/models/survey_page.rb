@@ -60,7 +60,8 @@ class SurveyPage < ActiveRecord::Base
   def export_to_survey_gizmo!
     puts "Exporting survey page!"
     page = SurveyGizmo::API::Page.create sg_page_params
-    self.sg_page_id = page.id
+    if self.new_record? then self.sg_page_id = page.id
+    else self.update_column(:sg_page_id, page.id) end
     self.survey_questions.reverse.each(&:export_to_survey_gizmo!)
   end
 

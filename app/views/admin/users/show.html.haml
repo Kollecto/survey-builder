@@ -1,0 +1,17 @@
+= admin_frame do
+  .page-header
+    %h1
+      = link_to 'Edit Profile', edit_admin_user_path(@user), :class => 'btn btn-default pull-right'
+      = link_to 'Become', become_admin_user_path(@user), :class => 'btn btn-default pull-right', :method => :post
+      User Management
+      %small= @user.name
+
+  .panel.panel-info
+    .panel-heading Contact Info
+    .panel-body{:style => 'text-align:center;padding-bottom:0'}
+      %h3{:style => 'margin:0;'}= @user.name
+      %p.lead
+        %small
+          = link_to @user.email, "mailto: #{@user.email}"
+          -# |
+          -# = number_to_phone @user.phone

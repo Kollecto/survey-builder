@@ -1,0 +1,12 @@
+= admin_frame do
+  = form_frame do
+    .panel.panel-default
+      .panel-heading Edit #{@user.name}'s Profile
+      .panel-body
+        = simple_form_for [:admin, @user] do |f|
+          = f.input :first_name, :autofocus => true
+          = f.input :email, :required => true
+          = f.input :role, :collection => User::ROLES, :include_blank => false if current_user.admin?
+          %hr
+          = f.submit :class => 'btn btn-success btn-lg btn-block'
+

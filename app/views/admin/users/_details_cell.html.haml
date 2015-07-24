@@ -1,0 +1,10 @@
+= link_to u.name, [:admin, u]
+- if u.admin?
+  %span.label.label-success{:style => 'position:relative;top:-2px;'} Administrator
+- # TODO: labels for influencer vs. normal user
+%br
+%small
+  = link_to u.email, "mailto:#{u.email}"
+  -# - if u.phone.present?
+  -#   |
+  -#   = link_to number_to_phone(u.phone), "tel:#{u.phone}"

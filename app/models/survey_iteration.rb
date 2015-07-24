@@ -141,7 +141,7 @@ class SurveyIteration < ActiveRecord::Base
   def self.google_sheet
     begin
       self.google_drive_session.spreadsheet_by_key SPREADSHEET_ID
-    rescue Google::APIClient::AuthorizationError
+    rescue Google::APIClient::AuthorizationError, Google::APIClient::ClientError
       self.clear_google_tokens!
       self.obtain_google_drive_session!
       self.google_sheet
@@ -181,13 +181,24 @@ class SurveyIteration < ActiveRecord::Base
   def export_to_survey_gizmo!
     puts 'Exporting survey!'
     survey = SurveyGizmo::API::Survey.create self.sg_survey_params
-    self.sg_survey_id = survey.id
+    if self.new_record?
+      self.sg_survey_id = survey.id
+      self.publish_to_sg_started_at = Time.now
+    else
+      self.update_column(:sg_survey_id, survey.id)
+      self.update_column(:publish_to_sg_started_at, Time.now)
+    end
     self.survey_pages.select{|sp| sp.metadata['week'] == 'Week 1.5' }
                      .each(&:export_to_survey_gizmo!)
+    self.published_to_sg_at = Time.now
+    return true if self.new_record?
+    self.save!
   end
   def delete_from_survey_gizmo!
     return false unless self.sg_survey_id.present?
     self.sg_survey.destroy
+    return true if self.new_record?
+    self.save!
   end
 
   def self.publish_from_google_drive!(attrs={})
@@ -200,6 +211,33 @@ class SurveyIteration < ActiveRecord::Base
     puts "Edit URL: #{instance.sg_survey.links['edit']}"
     puts
     instance
+  end
+
+  def queued_for_publishing?
+    publish_to_sg_queued_at.present? && !publishing_to_sg?; end
+  def publishing_to_sg?
+    publish_to_sg_started_at.present? && !published_to_sg?; end
+  def published_to_sg?; self.published_to_sg_at.present?; end
+
+  def publish_to_sg!
+    # self.published_to_sg_at = Time.now
+    self.publish_to_sg_queued_at = Time.now
+    # return false unless export_to_survey_gizmo!
+    return false unless self.save
+    PublishToSgJob.perform_later self
+    true
+  end
+  def delete_from_sg!
+    return false unless delete_from_survey_gizmo!
+    self.published_to_sg_at = nil
+    self.save
+  end
+
+  def status
+    return 'Published' if published_to_sg?
+    return 'Publishing' if publishing_to_sg?
+    return 'Queued for Publishing' if queued_for_publishing?
+    'Not Published'
   end
 
   class GoogleAuthRequiredError < StandardError

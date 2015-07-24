@@ -1,5 +1,5 @@
 %nav.navbar.navbar-inverse.navbar-fixed-top{role: "navigation"}
-  .container
+  = smart_container do
     .navbar-header
       %button.navbar-toggle.collapsed{type: "button", data: {toggle: "collapse", target: "#navbar"}, aria: {expanded: "false", controls: "navbar"} }
         %span.sr-only Toggle navigation
@@ -20,7 +20,8 @@
             %ul.dropdown-menu.main-nav-dropdown{:role => 'menu'}
               - if current_user.admin?
                 %li.dropdown-header{:role => 'presentation'} Backstage
-                -# = active_link_to 'User Management', admin_users_path, :wrap_tag => :li
+                = active_link_to 'Survey Iterations', admin_survey_iterations_path, :wrap_tag => :li
+                = active_link_to 'User Management', admin_users_path, :wrap_tag => :li
                 %li.divider
               %li.dropdown-header{:role => 'presentation'} Your Account
               = active_link_to 'Edit Profile', edit_user_registration_path, :wrap_tag => :li

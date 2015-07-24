@@ -1,0 +1,11 @@
+= admin_frame do
+  .page-header
+    %h1 User Management
+  = render_flash_messages!
+
+  - if @users.any?
+    = render 'table', :users => @users
+  - else
+    .jumbotron.text-center
+      %h1 Nothing to display.
+      %p There are no users in the database yet.

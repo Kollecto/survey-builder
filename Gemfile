@@ -34,6 +34,7 @@ gem 'capistrano-rails', group: :development
 gem 'capistrano-bundler', group: :development
 gem 'capistrano-passenger', '= 0.0.2', group: :development
 gem 'capistrano-faster-assets', group: :development
+gem 'capistrano-sidekiq', group: :development
 gem 'rvm1-capistrano3', :require => false
 gem 'capistrano'
 
@@ -66,6 +67,7 @@ gem 'apitome'
 gem 'api-auth'
 gem 'responders'
 gem 'permanent_records'
+gem 'sidekiq'
 
 # App Specific
 gem 'survey-gizmo-ruby'

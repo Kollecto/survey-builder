@@ -37,7 +37,8 @@ class SurveyQuestion < ActiveRecord::Base
   def export_to_survey_gizmo!
     puts "Exporting survey question!"
     question = SurveyGizmo::API::Question.create sg_question_params
-    self.sg_question_id = question.id
+    if self.new_record? then self.sg_question_id = question.id
+    else self.update_column(:sg_question_id, question.id) end
     if parent_question.present? || previous_question.present?
       if parent_question.present?
         # question.properties['piped_from'] = parent_question.sg_question_id

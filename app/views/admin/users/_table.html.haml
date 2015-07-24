@@ -1,0 +1,14 @@
+.table-responsive
+  %table.table.table-bordered.table-striped
+    %thead
+      %tr
+        %th User
+        %th Membership
+        %th.text-center Actions
+    %tbody
+      - users.each do |u|
+        = render 'admin/users/table_row', :u => u
+
+- if users.respond_to?(:current_page)
+  .text-center= paginate users, :theme => 'twitter-bootstrap-3'
+

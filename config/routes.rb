@@ -1,5 +1,19 @@
 Rails.application.routes.draw do
 
+  # ADMIN ROUTES
+  namespace :admin do
+    get '/' => 'base#dashboard'
+    resources :survey_iterations do
+      member do
+        match 'publish_to_sg',  via: [:get, :post]
+        match 'delete_from_sg', via: [:get, :post]
+      end
+    end
+    resources :users do
+      post 'become', :on => :member
+    end
+  end
+
   resources :taste_categories
   resources :survey_submissions do
     get 'take_survey', on: :member, as: 'take'

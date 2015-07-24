@@ -1,0 +1,15 @@
+= admin_frame do
+  .page-header
+    %h1
+      = link_to new_admin_survey_iteration_path, class: 'btn btn-success' do
+        %span.glyphicon.glyphicon-plus
+        New Iteration
+      Survey Iterations
+  = render_flash_messages!
+
+  - if @survey_iterations.any?
+    = render 'table', :survey_iterations => @survey_iterations
+  - else
+    .jumbotron.text-center
+      %h1 Nothing to display.
+      %p There are no iterations to show you.

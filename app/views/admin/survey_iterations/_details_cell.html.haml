@@ -1,0 +1,7 @@
+= survey_iteration_status_label iteration, :class => 'pull-right'
+= link_to iteration.title, [:admin, iteration]
+%br
+%small
+  Published
+  = time_ago_in_words iteration.created_at
+  ago

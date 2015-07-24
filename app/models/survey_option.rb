@@ -24,7 +24,8 @@ class SurveyOption < ActiveRecord::Base
   def export_to_survey_gizmo!
     puts "Exporting survey option!"
     option = SurveyGizmo::API::Option.create sg_option_params
-    self.sg_option_id = option.id
+    if self.new_record? then self.sg_option_id = option.id
+    else self.update_column(:sg_option_id, option.id) end
   end
 
 end

@@ -1,0 +1,27 @@
+%tr
+  %td= render 'admin/users/details_cell', :u => u
+  %td
+    Member since
+    = time_ago_in_words u.created_at
+    ago
+    - if u.current_sign_in_at.present?
+      %br
+      Online since
+      = time_ago_in_words u.current_sign_in_at
+      ago from
+      = u.current_sign_in_ip
+    - elsif u.last_sign_in_at.present?
+      %br
+      Last online
+      = time_ago_in_words u.last_sign_in_at
+      ago from
+      = u.last_sign_in_ip
+  %td.text-center
+    = link_to [:admin, u], :class => 'btn btn-xs btn-default has-tooltip', :title => 'Details', :data => {:placement => 'bottom'} do
+      %span.glyphicon.glyphicon-user
+    = link_to become_admin_user_path(u), :class => 'btn btn-default btn-xs has-tooltip', :title => 'Become', :method => :post, :data => {:placement => 'bottom'} do
+      %span.glyphicon.glyphicon-log-in
+    = link_to edit_admin_user_path(u), :class => 'btn btn-xs btn-default has-tooltip', :title => 'Edit', :data => {:placement => 'bottom'} do
+      %span.glyphicon.glyphicon-edit
+    = link_to [:admin, u], :class => 'btn btn-xs btn-default has-tooltip', :title => 'Delete', :method => :delete, :data => {:placement => 'bottom', :confirm => 'Are you sure?'} do
+      %span.glyphicon.glyphicon-trash
