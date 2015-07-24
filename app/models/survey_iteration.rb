@@ -17,7 +17,7 @@ class SurveyIteration < ActiveRecord::Base
   has_many :survey_questions, :through => :survey_pages
 
   before_validation :ensure_title_set
-  before_validation :import_questions_from_google!
+  before_validation :import_questions_from_google!, :on => [:create]
 
   validates_presence_of :title
 
