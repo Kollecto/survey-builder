@@ -246,9 +246,9 @@ class SurveyIteration < ActiveRecord::Base
     def message; "Google authorization is required."; end
   end
 
+  def self.default_title; "Kollecto Survey #{Time.now.to_s}"; end
+
   private
-  def ensure_title_set
-    self.title ||= "Kollecto Survey #{Time.now.to_s}"
-  end
+  def ensure_title_set; self.title ||= self.class.default_title; end
 
 end
