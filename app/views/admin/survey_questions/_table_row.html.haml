@@ -1,0 +1,13 @@
+%tr
+  %td= render 'admin/survey_questions/details_cell', :question => sq
+  -# %td= render 'admin/survey_pages/details_cell', :page => @page || sq.survey_page
+  %td= render 'admin/survey_iterations/details_cell',
+              :iteration => @iteration || sq.survey_iteration
+  %td.text-center
+    = link_to [:edit, :admin, sq], title: 'Edit Question',
+      class: 'btn btn-xs btn-default has-tooltip edit-btn' do
+      %span.glyphicon.glyphicon-edit
+    = link_to [:admin, sq], title: 'Delete Question', method: :delete,
+      class: 'btn btn-xs btn-default has-tooltip delete-btn',
+      data: { confirm: 'Are you sure?' } do
+      %span.glyphicon.glyphicon-trash

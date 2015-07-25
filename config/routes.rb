@@ -3,15 +3,38 @@ Rails.application.routes.draw do
   # ADMIN ROUTES
   namespace :admin do
     get '/' => 'base#dashboard'
+
     resources :survey_iterations do
       member do
+        post 'import_from_gd'
+        post 'reimport_from_gd'
         post 'publish_to_sg'
         post 'cancel_publish_to_sg'
         post 'delete_from_sg'
       end
+      resources :survey_pages do
+        resources :survey_questions do
+          resources :survey_options
+        end
+      end
+      resources :survey_questions do
+        resources :survey_options
+      end
+      resources :survey_submissions
     end
+    resources :survey_pages do
+      resources :survey_questions do
+        resources :survey_options
+      end
+    end
+    resources :survey_questions do
+      resources :survey_options
+    end
+    resources :survey_options
+    resources :survey_submissions
     resources :users do
       post 'become', :on => :member
+      resources :survey_submissions
     end
   end
 

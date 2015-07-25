@@ -1,0 +1,29 @@
+= admin_frame do
+  .page-header
+    %h1
+      = link_to @iteration.title, [:admin, @iteration]
+      %br
+      %small
+        - case @by
+        - when 'question'
+          Options for Question
+          = link_to @question.title, [:admin, @question]
+          (#{@question.survey_options.count})
+        - when 'page'
+          Question Options for Page
+          = link_to @page.title, [:admin, @page]
+          (#{@page.survey_options.count})
+        - when 'iteration'
+          Question Options
+          (#{@iteration.survey_options.count})
+        - else
+          Survey Options
+          (#{@survey_options.unscoped.count})
+  = render_flash_messages!
+
+  - if @survey_options.any?
+    = render 'table', :survey_options => @survey_options
+  - else
+    .jumbotron.text-center
+      %h1 Nothing to display.
+      %p There are no options to show you.

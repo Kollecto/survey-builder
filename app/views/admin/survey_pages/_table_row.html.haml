@@ -1,0 +1,12 @@
+%tr
+  %td= render 'admin/survey_pages/details_cell', :page => sp
+  %td= render 'admin/survey_iterations/details_cell',
+            :iteration => @iteration || sp.survey_iteration
+  %td.text-center
+    = link_to [:edit, :admin, sp], title: 'Edit Page',
+      class: 'btn btn-xs btn-default has-tooltip edit-btn' do
+      %span.glyphicon.glyphicon-edit
+    = link_to [:admin, sp], title: 'Delete Page', method: :delete,
+      class: 'btn btn-xs btn-default has-tooltip delete-btn',
+      data: { confirm: 'Are you sure?' } do
+      %span.glyphicon.glyphicon-trash

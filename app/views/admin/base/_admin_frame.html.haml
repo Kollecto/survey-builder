@@ -2,10 +2,13 @@
   = stylesheet_link_tag 'dashboard.css'
 
 .col-sm-3.col-md-2.sidebar
-  -# %h4.text-center Admin Tools
   %ul.nav.nav-sidebar#admin-sidebar-nav
-    -#%li.nav-divider
+    %li.nav-header Analysis Tools
+    %li.nav-divider
     -# = active_link_to 'Payments', admin_payments_path, :wrap_tag => :li
-    -# %li.nav-divider
-    = active_link_to 'Survey Iterations', admin_survey_iterations_path, :wrap_tag => :li
+    = active_link_to 'Survey Submissions', admin_survey_submissions_path, :wrap_tag => :li
+    %li.nav-divider
+    %li.nav-header Management Tools
+    %li.nav-divider
+    = active_link_to 'Survey Management', admin_survey_iterations_path, :wrap_tag => :li, :active => !(params[:controller] =~ /^admin\/survey_(?!(submissions))/).nil?
     = active_link_to 'User Management', admin_users_path, :wrap_tag => :li

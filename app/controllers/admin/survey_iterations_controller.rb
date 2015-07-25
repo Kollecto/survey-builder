@@ -18,6 +18,9 @@ module Admin
     end
 
     def show
+      @pages = @survey_iteration.survey_pages.order(updated_at: :desc).limit(5)
+      @questions = @survey_iteration.survey_questions
+                   .order(updated_at: :desc).limit(5)
     end
 
     def edit
@@ -29,6 +32,24 @@ module Admin
     def destroy
       @survey_iteration.destroy
       respond_with :admin, @survey_iteration
+    end
+
+    def import_from_gd
+      if @survey_iteration.begin_import_from_google!
+        flash[:success] = 'Your iteration is being imported from Google Drive!'
+      else
+        flash[:error] = 'Your iteration could not be queued for import!'
+      end
+      redirect_to :back
+    end
+
+    def reimport_from_gd
+      if @survey_iteration.begin_reimport_from_google!
+        flash[:success] = 'Your iteration is being reimported from Google Drive!'
+      else
+        flash[:error] = 'Your iteration could not be queued for reimport!'
+      end
+      redirect_to :back
     end
 
     def publish_to_sg

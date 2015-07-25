@@ -1,0 +1,23 @@
+= admin_frame do
+  .page-header
+    %h1
+      = link_to @iteration.title, [:admin, @iteration]
+      %br
+      %small
+        - case @by
+        - when 'page'
+          Questions for Page
+          = link_to @page.title, [:admin, @page]
+          (#{@page.survey_questions.count})
+        - when 'iteration'
+          Questions (#{@iteration.survey_questions.count})
+        - else
+          Survey Questions (#{@survey_questions.unscoped.count})
+  = render_flash_messages!
+
+  - if @survey_questions.any?
+    = render 'table', :survey_questions => @survey_questions
+  - else
+    .jumbotron.text-center
+      %h1 Nothing to display.
+      %p There are no questions to show you.

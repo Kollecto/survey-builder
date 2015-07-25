@@ -13,12 +13,13 @@ class SurveyIteration < ActiveRecord::Base
 
   serialize :worksheet_header_row
 
-  has_many :survey_pages
+  has_many :survey_pages, :dependent => :destroy
   has_many :survey_questions, :through => :survey_pages
   has_many :survey_submissions
 
   before_validation :ensure_title_set
-  before_validation :import_questions_from_google!, :on => [:create]
+  # before_validation :import_questions_from_google, :on => [:create]
+  after_commit :begin_import_from_google!, :on => :create
 
   validates_presence_of :title
 
@@ -153,7 +154,9 @@ class SurveyIteration < ActiveRecord::Base
     self.google_sheet.worksheets.find{|ws| ws.title == WORKSHEET_TITLE }
   end
 
-  def import_questions_from_google!
+  def import_questions_from_google
+    puts 'Importing from Google!'
+    update_column :import_from_google_started_at, Time.now
     rows = self.class.google_worksheet.rows
     self.worksheet_header_row = rows.first
     rows[1..-1].each do |cells|
@@ -162,9 +165,32 @@ class SurveyIteration < ActiveRecord::Base
         heading = self.worksheet_header_row[i]
         cell_hash[heading] = cell
       end
-      self.survey_pages.build :metadata => cell_hash
+      puts cell_hash
+      self.survey_pages.build :metadata => cell_hash,
+                :imported_from_google_at => Time.now
     end
+    # puts "Length here: #{self.survey_pages.length}"
+    update_column :import_from_google_completed_at, Time.now
     true
+  end
+  def import_questions_from_google!
+    return false unless import_questions_from_google
+    # puts "Length there: #{self.survey_pages.length}"
+    save!
+  end
+  def begin_import_from_google!
+    self.update_columns(
+      :import_from_google_queued_at => Time.now,
+      :import_from_google_started_at => nil,
+      :import_from_google_completed_at => nil )
+    # return false unless self.save
+    job = ImportFromGoogleDriveJob.perform_later self
+    self.update_column :import_from_google_jid, job.job_id
+    true
+  end
+  def begin_reimport_from_google!
+    self.survey_pages.imported_from_google.destroy_all
+    self.begin_import_from_google!
   end
 
   def sg_survey
@@ -230,6 +256,12 @@ class SurveyIteration < ActiveRecord::Base
     instance
   end
 
+  def imported_from_google?; import_from_google_completed_at.present?; end
+  def importing_from_google?
+    !imported_from_google? && import_from_google_started_at.present?; end
+  def import_from_google_queued?
+    !importing_from_google? && import_from_google_completed_at.present?; end
+
   def publish_to_sg_cancelled?; publish_to_sg_cancelled_at.present?; end
   def publish_to_sg_queued?
     publish_to_sg_queued_at.present? &&
@@ -247,8 +279,10 @@ class SurveyIteration < ActiveRecord::Base
   def deleted_from_sg?; delete_from_sg_completed_at.present?; end
 
   def publish_to_sg!
-    # self.published_to_sg_at = Time.now
     self.publish_to_sg_queued_at = Time.now
+    self.publish_to_sg_started_at = nil
+    self.publish_to_sg_cancelled_at = nil
+    self.published_to_sg_at = nil
     # return false unless export_to_survey_gizmo!
     return false unless self.save
     job = PublishToSgJob.perform_later self
@@ -271,7 +305,7 @@ class SurveyIteration < ActiveRecord::Base
     true
   end
 
-  def status
+  def sg_status
     return 'Deleting' if deleting_from_sg?
     return 'Queued for Deletion' if delete_from_sg_queued?
     return 'Published' if published_to_sg?
@@ -279,6 +313,13 @@ class SurveyIteration < ActiveRecord::Base
     return 'Cancelled Publishing' if publish_to_sg_cancelled?
     return 'Queued for Publishing' if publish_to_sg_queued?
     'Not Published'
+  end
+
+  def gd_status
+    return 'Imported' if imported_from_google?
+    return 'Importing' if importing_from_google?
+    return 'Queued for Import' if import_from_google_queued?
+    'Not Imported'
   end
 
   class GoogleAuthRequiredError < StandardError

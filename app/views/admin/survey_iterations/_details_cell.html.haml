@@ -1,37 +1,54 @@
-= survey_iteration_status_label iteration, :class => 'pull-right'
+.pull-right.hidden-xs
+  = survey_iteration_gd_status_label iteration
+  = survey_iteration_sg_status_label iteration
 = link_to iteration.title, [:admin, iteration]
 %br
 %small
-  = succeed(',') { pluralize iteration.survey_pages.count, 'page' }
-  = succeed(',') { pluralize iteration.survey_questions.count, 'question' }
-  = pluralize iteration.survey_submissions.count, 'submission'
+  = succeed(',') { link_to pluralize(iteration.survey_pages.count, 'page'),
+                       admin_survey_iteration_survey_pages_path(iteration)}
+  = succeed(',') { link_to pluralize(iteration.survey_questions.count,
+      'question'), admin_survey_iteration_survey_questions_path(iteration)}
+  = link_to pluralize(iteration.survey_submissions.count, 'submission'),
+              admin_survey_iteration_survey_submissions_path(iteration)
   %br
-  - case iteration.status
+  - case iteration.gd_status
+  - when 'Imported'
+    Imported from Google Drive
+    = time_ago_in_words iteration.import_from_google_completed_at
+    ago
+  - when 'Importing'
+    Started importing from Google Drive
+    = time_ago_in_words iteration.import_from_google_started_at
+    ago
+  - when 'Not Imported'
+    Not imported from Google Drive
+  - case iteration.sg_status
   - when 'Deleting'
+    %br
     Deletion from Survey Gizmo began
     = time_ago_in_words iteration.delete_from_sg_started_at
     ago,
     = iteration.survey_pages.published_to_sg.count.to_s + '/' + pluralize(iteration.survey_pages.count, 'page')
     remaining
   - when 'Queued for Deletion'
+    %br
     Queued for deletion from Survey Gizmo
     = time_ago_in_words iteration.delete_from_sg_queued_at
     ago
   - when 'Published'
+    %br
     Published to Survey Gizmo
     = time_ago_in_words iteration.published_to_sg_at
     ago
   - when 'Publishing'
+    %br
     Started publishing to Survey Gizmo
     = time_ago_in_words iteration.publish_to_sg_started_at
     ago,
     #{iteration.survey_pages.published_to_sg.count}/#{pluralize(iteration.survey_pages.count, 'page')}
     published
   - when 'Queued for Publishing'
+    %br
     Queued for publishing to Survey Gizmo
     = time_ago_in_words iteration.publish_to_sg_queued_at
-    ago
-  - when 'Not Published'
-    Imported from Google Drive
-    = time_ago_in_words iteration.created_at
     ago

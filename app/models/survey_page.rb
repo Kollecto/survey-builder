@@ -3,11 +3,15 @@ class SurveyPage < ActiveRecord::Base
 
   serialize :metadata
   belongs_to :survey_iteration
-  has_many :survey_questions
+  has_many :survey_questions, :dependent => :destroy
 
   after_initialize :fetch_title_and_desc_from_metadata
   after_initialize :initialize_questions
 
+  scope :imported_from_google, -> {
+    where('survey_pages.imported_from_google_at IS NOT NULL') }
+  scope :not_imported_from_google, -> {
+    where('survey_pages.imported_from_google_at IS NULL') }
   scope :published_to_sg, -> { where('survey_pages.sg_page_id IS NOT NULL') }
   scope :not_published_to_sg, -> { where('survey_pages.sg_page_id IS NULL') }
 

@@ -1,0 +1,11 @@
+- page = @page || question.survey_page
+%span{class: "fa fa-#{question.fontawesome_icon_for_type} resource-label-icon"}
+= link_to question.title.html_safe, [:admin, question]
+%br
+%small
+  %span.fa.fa-file-text.resource-label-icon
+  = link_to page.title.html_safe, [:admin, page]
+  %br
+  %span.fa.fa-circle-thin.resource-label-icon
+  = link_to pluralize(question.survey_options.count, 'option') + ' available',
+            [:admin, question, :survey_options]

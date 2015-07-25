@@ -1,0 +1,5 @@
+= link_to page.title.html_safe, [:admin, page]
+%br
+%small
+  = link_to pluralize(page.survey_questions.count, 'question'),
+                    [:admin, page, :survey_questions]

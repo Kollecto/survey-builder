@@ -1,0 +1,11 @@
+- question = @question || option.survey_question
+- page     = @page     || option.survey_page
+%span{class: "fa fa-#{question.fontawesome_icon_for_type} resource-label-icon"}
+= link_to option.title.html_safe, [:admin, option]
+%br
+%small
+  %span.fa.fa-question-circle.resource-label-icon
+  = link_to question.title.html_safe, [:admin, question]
+  %br
+  %span.fa.fa-file-text.resource-label-icon
+  = link_to page.title.html_safe, [:admin, page]

@@ -1,0 +1,12 @@
+.table-responsive
+  %table.table.table-bordered.table-striped.admin-survey-pages-table
+    %thead
+      %tr
+        %th Page Details
+        %th Iteration Details
+        %th.text-center Actions
+    %tbody
+      - survey_pages.each do |sp|
+        = render 'admin/survey_pages/table_row', :sp => sp
+- if survey_pages.respond_to? :current_page
+  .text-center= paginate survey_pages, :theme => 'twitter-bootstrap-3'

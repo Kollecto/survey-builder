@@ -3,7 +3,6 @@ class PublishToSgJob < ActiveJob::Base
 
   def perform(iteration)
     return if cancelled?
-    puts "Publish job running!"
     iteration.export_to_survey_gizmo!
   end
 

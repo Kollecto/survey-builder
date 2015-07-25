@@ -1,7 +1,19 @@
 %tr
   %td= render 'admin/survey_iterations/details_cell', :iteration => si
   %td.text-center
-    - case si.status
+    - case si.gd_status
+    - when 'Imported'
+      = link_to [:reimport_from_gd, :admin, si],
+        title: 'Reimport from Google Drive',
+        class: 'btn btn-xs btn-default has-tooltip reimport-from-gd-btn',
+        method: :post, :data => {:confirm => 'Are you sure?'} do
+        %span.glyphicon.glyphicon-import
+    - when 'Not Imported'
+      = link_to [:import_from_gd, :admin, si], title: 'Import from Google Drive',
+        class: 'btn btn-xs btn-default has-tooltip import-from-gd-btn',
+        method: :post, :data => {:confirm => 'Are you sure?'} do
+        %span.glyphicon.glyphicon-save
+    - case si.sg_status
     - when 'Published', 'Cancelled Publishing'
       = link_to [:delete_from_sg, :admin, si], method: :post,
         title: 'Delete from Survey Gizmo', data: {confirm: 'Are you sure?'},

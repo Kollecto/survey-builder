@@ -5,7 +5,7 @@ class SurveyQuestion < ActiveRecord::Base
   belongs_to :survey_iteration
   belongs_to :parent_question,   :class_name => 'SurveyQuestion'
   belongs_to :previous_question, :class_name => 'SurveyQuestion'
-  has_many :survey_options
+  has_many :survey_options, :dependent => :destroy
 
   accepts_nested_attributes_for :survey_options
   after_initialize :initialize_options
@@ -80,6 +80,13 @@ class SurveyQuestion < ActiveRecord::Base
     when 'radio' then :radio_buttons
     when 'checkbox' then :check_boxes
     else :string
+    end
+  end
+  def fontawesome_icon_for_type
+    case question_type
+    when 'radio' then 'dot-circle-o'
+    when 'checkbox' then 'check-square-o'
+    else 'font'
     end
   end
 

@@ -11,15 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150725002217) do
+ActiveRecord::Schema.define(version: 20150725193455) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "survey_iterations", force: :cascade do |t|
     t.string   "title"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
     t.string   "sg_survey_id"
     t.text     "worksheet_header_row"
     t.datetime "published_to_sg_at"
@@ -31,6 +31,10 @@ ActiveRecord::Schema.define(version: 20150725002217) do
     t.datetime "delete_from_sg_started_at"
     t.datetime "delete_from_sg_completed_at"
     t.string   "delete_from_sg_jid"
+    t.datetime "import_from_google_queued_at"
+    t.datetime "import_from_google_started_at"
+    t.datetime "import_from_google_completed_at"
+    t.string   "import_from_google_jid"
   end
 
   create_table "survey_options", force: :cascade do |t|
@@ -51,8 +55,9 @@ ActiveRecord::Schema.define(version: 20150725002217) do
     t.string   "sg_page_id"
     t.integer  "survey_iteration_id"
     t.text     "metadata"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.datetime "imported_from_google_at"
   end
 
   create_table "survey_questions", force: :cascade do |t|

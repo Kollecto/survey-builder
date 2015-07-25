@@ -19,8 +19,11 @@
               %span.caret
             %ul.dropdown-menu.main-nav-dropdown{:role => 'menu'}
               - if current_user.admin?
-                %li.dropdown-header{:role => 'presentation'} Backstage
-                = active_link_to 'Survey Iterations', admin_survey_iterations_path, :wrap_tag => :li
+                %li.dropdown-header{:role => 'presentation'} Analysis Tools
+                = active_link_to 'Survey Submissions', admin_survey_submissions_path, :wrap_tag => :li
+                %li.divider
+                %li.dropdown-header{:role => 'presentation'} Management Tools
+                = active_link_to 'Survey Management', admin_survey_iterations_path, :wrap_tag => :li, :active => !(params[:controller] =~ /^admin\/survey_(?!(submissions))/).nil?
                 = active_link_to 'User Management', admin_users_path, :wrap_tag => :li
                 %li.divider
               %li.dropdown-header{:role => 'presentation'} Your Account

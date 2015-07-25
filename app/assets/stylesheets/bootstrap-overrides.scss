@@ -29,6 +29,13 @@ input.radio_buttons[type=radio] {
   @media (max-width: $screen-xs-max) { padding-top: 20px; }
 }
 
+.resource-label-icon {
+  position: relative;
+  top: 0;
+  font-size: 14px;
+}
+small .resource-label-icon { margin-right: 2px; }
+
 body.kollecto-frontend { }
 body.kollecto-backend {
   .page-header {
