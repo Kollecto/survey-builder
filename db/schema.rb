@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150725193455) do
+ActiveRecord::Schema.define(version: 20150725230637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,10 @@ ActiveRecord::Schema.define(version: 20150725193455) do
     t.datetime "import_from_google_started_at"
     t.datetime "import_from_google_completed_at"
     t.string   "import_from_google_jid"
+    t.integer  "creator_id"
+    t.string   "google_spreadsheet_id"
+    t.string   "google_worksheet_url"
+    t.datetime "import_from_google_failed_at"
   end
 
   create_table "survey_options", force: :cascade do |t|
@@ -122,6 +126,8 @@ ActiveRecord::Schema.define(version: 20150725193455) do
     t.integer  "invitations_count",      default: 0
     t.string   "first_name"
     t.string   "role",                   default: "User"
+    t.datetime "google_auth_expires_at"
+    t.string   "google_access_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree

@@ -2,7 +2,7 @@
   %td= render 'admin/survey_iterations/details_cell', :iteration => si
   %td.text-center
     - case si.gd_status
-    - when 'Imported'
+    - when 'Imported', 'Failed to Import'
       = link_to [:reimport_from_gd, :admin, si],
         title: 'Reimport from Google Drive',
         class: 'btn btn-xs btn-default has-tooltip reimport-from-gd-btn',

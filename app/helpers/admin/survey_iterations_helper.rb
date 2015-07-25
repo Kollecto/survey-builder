@@ -32,6 +32,7 @@ module Admin::SurveyIterationsHelper
     case si.gd_status
     when 'Imported' then 'success'
     when 'Importing' then 'info'
+    when 'Failed to Import' then 'danger'
     else 'default'
     end
   end

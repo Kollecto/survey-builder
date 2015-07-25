@@ -1,23 +1,26 @@
-require "google/api_client"
-require 'google/api_client/client_secrets'
-require 'google/api_client/auth/installed_app'
-require "google_drive"
+# require "google/api_client"
+# require 'google/api_client/client_secrets'
+# require 'google/api_client/auth/installed_app'
+# require "google_drive"
 require 'survey-gizmo-ruby'
 
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+# OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 class SurveyIteration < ActiveRecord::Base
   OAUTH_CALLBACK_URI = 'https://www.example.com/oauth2callback'
   SPREADSHEET_ID  = '1R0X0L9ouA9ZQl6lowXGJBlc5HbU6VHmGULb9dPKfcNM'
   WORKSHEET_TITLE = 'Art Submissions (updated)'
 
+  attr_accessor :google_worksheet_params
   serialize :worksheet_header_row
 
+  belongs_to :creator, class_name: 'User'
   has_many :survey_pages, :dependent => :destroy
   has_many :survey_questions, :through => :survey_pages
   has_many :survey_submissions
 
   before_validation :ensure_title_set
+  before_validation :process_google_worksheet_params
   # before_validation :import_questions_from_google, :on => [:create]
   after_commit :begin_import_from_google!, :on => :create
 
@@ -154,10 +157,22 @@ class SurveyIteration < ActiveRecord::Base
     self.google_sheet.worksheets.find{|ws| ws.title == WORKSHEET_TITLE }
   end
 
+  def google_spreadsheet
+    return if self.google_spreadsheet_id.nil?
+    self.creator.google_spreadsheets.find{|ss|
+             self.google_spreadsheet_id == ss.id}
+  end
+  def google_worksheet
+    return if self.google_spreadsheet_id.nil? || self.google_worksheet_url.nil?
+    self.google_spreadsheet.worksheets.find{|ws|
+                self.google_worksheet_url == ws.worksheet_feed_url }
+  end
+
   def import_questions_from_google
     puts 'Importing from Google!'
     update_column :import_from_google_started_at, Time.now
-    rows = self.class.google_worksheet.rows
+    ws = self.google_worksheet
+    rows = ws.rows
     self.worksheet_header_row = rows.first
     rows[1..-1].each do |cells|
       cell_hash = {}
@@ -165,7 +180,6 @@ class SurveyIteration < ActiveRecord::Base
         heading = self.worksheet_header_row[i]
         cell_hash[heading] = cell
       end
-      puts cell_hash
       self.survey_pages.build :metadata => cell_hash,
                 :imported_from_google_at => Time.now
     end
@@ -244,7 +258,7 @@ class SurveyIteration < ActiveRecord::Base
     self.save!
   end
 
-  def self.publish_from_google_drive!(attrs={})
+  def self.publish_from_google_drive_without_saving!(attrs={})
     instance = new attrs
     instance.send :ensure_title_set
     puts "Publishing #{ instance.title }"
@@ -261,6 +275,9 @@ class SurveyIteration < ActiveRecord::Base
     !imported_from_google? && import_from_google_started_at.present?; end
   def import_from_google_queued?
     !importing_from_google? && import_from_google_completed_at.present?; end
+  def import_from_google_failed?; import_from_google_failed_at.present?; end
+  def mark_import_from_google_failed!
+    update_column :import_from_google_failed_at, Time.now; end
 
   def publish_to_sg_cancelled?; publish_to_sg_cancelled_at.present?; end
   def publish_to_sg_queued?
@@ -318,6 +335,7 @@ class SurveyIteration < ActiveRecord::Base
   def gd_status
     return 'Imported' if imported_from_google?
     return 'Importing' if importing_from_google?
+    return 'Failed to Import' if import_from_google_failed?
     return 'Queued for Import' if import_from_google_queued?
     'Not Imported'
   end
@@ -333,6 +351,12 @@ class SurveyIteration < ActiveRecord::Base
   private
   def ensure_title_set
     self.title = self.class.default_title if self.title.blank?
+  end
+  def process_google_worksheet_params
+    if self.google_worksheet_params.present?
+      self.google_spreadsheet_id, self.google_worksheet_url =
+        self.google_worksheet_params.split(' | ')
+    end
   end
 
 end

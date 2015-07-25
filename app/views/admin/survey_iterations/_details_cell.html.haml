@@ -20,8 +20,16 @@
     Started importing from Google Drive
     = time_ago_in_words iteration.import_from_google_started_at
     ago
+  - when 'Queued for Import'
+    Queued for import from Google Drive
+    = time_ago_in_words iteration.import_from_google_queued_at
+    ago
   - when 'Not Imported'
     Not imported from Google Drive
+  - when 'Failed to Import'
+    Failed to import from Google Drive
+    = time_ago_in_words iteration.import_from_google_failed_at
+    ago
   - case iteration.sg_status
   - when 'Deleting'
     %br

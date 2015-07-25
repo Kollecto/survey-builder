@@ -13,10 +13,11 @@ class ApplicationController < ActionController::Base
     method = "#{resource}_params"
     params[resource] &&= send(method) if respond_to?(method, true)
   end
-  rescue_from SurveyIteration::GoogleAuthRequiredError do
+  rescue_from User::GoogleAuthRequiredError do
     session[:return_to] = request.url
-    auth = SurveyIteration.build_google_auth_obj
-    redirect_to auth.authorization_uri.to_s
+    auth_url = User.build_google_auth_obj.authorization_uri.to_s
+    puts auth_url
+    redirect_to auth_url
   end
 
   protected
@@ -32,6 +33,12 @@ class ApplicationController < ActionController::Base
     unless current_user.admin?
       flash[:error] = 'You must be an admin to access to access this area!'
       redirect_to root_path
+    end
+  end
+  def authenticate_with_google!
+    authenticate_user!
+    unless current_user.google_auth_active?
+      raise User::GoogleAuthRequiredError.new
     end
   end
 

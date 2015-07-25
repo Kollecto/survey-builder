@@ -1,13 +1,13 @@
 module Admin
   class SurveyIterationsController < BaseController
     load_and_authorize_resource
+    before_filter :authenticate_with_google!, :only => [:new]
 
     def new
-      unless SurveyIteration.google_integration_activated?
-        raise SurveyIteration::GoogleAuthRequiredError.new; end
     end
 
     def create
+      @survey_iteration.creator = current_user
       @survey_iteration.save
       respond_with :admin, @survey_iteration
     end
@@ -81,7 +81,7 @@ module Admin
 
     private
     def survey_iteration_params
-      params.require(:survey_iteration).permit(:title)
+      params.require(:survey_iteration).permit :title, :google_worksheet_params
     end
 
   end

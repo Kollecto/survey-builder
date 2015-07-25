@@ -1,5 +1,9 @@
 = simple_form_for [:admin, @survey_iteration] do |f|
   = f.input :title, :required => false, :autofocus => true,
             :placeholder => SurveyIteration.default_title
+  = f.input :google_worksheet_params, as: :grouped_select, group_method: :last,
+    collection: current_user.google_spreadsheets.map{|ss| [ss.title, ss.worksheets.map{|ws| [ws.title, "#{ss.id} | #{ws.worksheet_feed_url}"] }] },
+    label: 'Google Worksheet',
+    include_blank: 'Please select a worksheet from your Google Drive...'
   %hr
   = f.submit 'Save Iteration', class: 'btn btn-success btn-lg btn-block'

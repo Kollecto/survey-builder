@@ -50,7 +50,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: 'registrations' }
 
   get 'start' => 'survey_submissions#start'
-  get 'google_auth_callback' => 'home#google_auth_callback'
+  get   'google_auth_callback' => 'home#google_auth_callback'
+  delete 'google_auth_signout' => 'home#google_auth_signout'
   root 'home#home'
 
   # The priority is based upon order of creation: first created -> highest priority.

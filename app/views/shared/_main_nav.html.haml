@@ -14,6 +14,8 @@
             = link_to '#', :class => 'dropdown-toggle', :data => {:toggle => 'dropdown'} do
               = current_user.first_name
               %span.glyphicon.glyphicon-user
+              - if current_user.google_auth_active?
+                %span.fa.fa-google
               - if current_user.admin?
                 %span.fa.fa-bolt
               %span.caret
@@ -28,6 +30,8 @@
                 %li.divider
               %li.dropdown-header{:role => 'presentation'} Your Account
               = active_link_to 'Edit Profile', edit_user_registration_path, :wrap_tag => :li
+              - if current_user.google_auth_active?
+                = active_link_to 'Sign Out of Google', google_auth_signout_path, :method => :delete, :wrap_tag => :li
               = active_link_to 'Sign Out', destroy_user_session_path, :method => :delete, :wrap_tag => :li
         - else
           = active_link_to 'Sign In', new_user_session_path, :wrap_tag => :li
