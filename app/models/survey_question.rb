@@ -10,6 +10,9 @@ class SurveyQuestion < ActiveRecord::Base
   accepts_nested_attributes_for :survey_options
   after_initialize :initialize_options
 
+  scope :published_to_sg, -> { where('survey_questions.sg_question_id IS NOT NULL') }
+  scope :not_published_to_sg, -> { where('survey_questions.sg_question_id IS NULL') }
+
   def initialize_options
     self.survey_options.each do |opt|
       opt.survey_question = self
@@ -61,6 +64,15 @@ class SurveyQuestion < ActiveRecord::Base
       question.save
     end
     self.survey_options.each(&:export_to_survey_gizmo!)
+  end
+  def delete_from_survey_gizmo!
+    return false unless self.sg_question.present?
+    puts "Deleting question from Survey Gizmo!"
+    self.survey_options.published_to_sg.each(&:delete_from_survey_gizmo!)
+    self.sg_question.destroy
+    return true if new_record?
+    self.sg_question_id = nil
+    self.save
   end
 
   def simpleform_input_type

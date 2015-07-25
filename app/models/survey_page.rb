@@ -8,6 +8,9 @@ class SurveyPage < ActiveRecord::Base
   after_initialize :fetch_title_and_desc_from_metadata
   after_initialize :initialize_questions
 
+  scope :published_to_sg, -> { where('survey_pages.sg_page_id IS NOT NULL') }
+  scope :not_published_to_sg, -> { where('survey_pages.sg_page_id IS NULL') }
+
   def fetch_title_and_desc_from_metadata
     return unless self.metadata.present?
     self.title ||= self.metadata['title-by-artist']
@@ -64,6 +67,15 @@ class SurveyPage < ActiveRecord::Base
     if self.new_record? then self.sg_page_id = page.id
     else self.update_column(:sg_page_id, page.id) end
     self.survey_questions.reverse.each(&:export_to_survey_gizmo!)
+  end
+  def delete_from_survey_gizmo!
+    return false unless self.sg_page.present?
+    puts "Deleting page from Survey Gizmo!"
+    self.survey_questions.published_to_sg.each(&:delete_from_survey_gizmo!)
+    self.sg_page.destroy
+    return true if new_record?
+    self.sg_page_id = nil
+    self.save
   end
 
 end

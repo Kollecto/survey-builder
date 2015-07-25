@@ -7,16 +7,28 @@
   = pluralize iteration.survey_submissions.count, 'submission'
   %br
   - case iteration.status
+  - when 'Deleting'
+    Deletion from Survey Gizmo began
+    = time_ago_in_words iteration.delete_from_sg_started_at
+    ago,
+    = iteration.survey_pages.published_to_sg.count.to_s + '/' + pluralize(iteration.survey_pages.count, 'page')
+    remaining
+  - when 'Queued for Deletion'
+    Queued for deletion from Survey Gizmo
+    = time_ago_in_words iteration.delete_from_sg_queued_at
+    ago
   - when 'Published'
-    Published
+    Published to Survey Gizmo
     = time_ago_in_words iteration.published_to_sg_at
     ago
   - when 'Publishing'
-    Started publishing
+    Started publishing to Survey Gizmo
     = time_ago_in_words iteration.publish_to_sg_started_at
-    ago
+    ago,
+    #{iteration.survey_pages.published_to_sg.count}/#{pluralize(iteration.survey_pages.count, 'page')}
+    published
   - when 'Queued for Publishing'
-    Queued for publishing
+    Queued for publishing to Survey Gizmo
     = time_ago_in_words iteration.publish_to_sg_queued_at
     ago
   - when 'Not Published'

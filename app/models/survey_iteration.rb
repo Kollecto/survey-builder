@@ -184,10 +184,16 @@ class SurveyIteration < ActiveRecord::Base
     survey = SurveyGizmo::API::Survey.create self.sg_survey_params
     if self.new_record?
       self.sg_survey_id = survey.id
+      self.delete_from_sg_queued_at = nil
+      self.delete_from_sg_started_at = nil
+      self.delete_from_sg_completed_at = nil
       self.publish_to_sg_started_at = Time.now
     else
-      self.update_column(:sg_survey_id, survey.id)
-      self.update_column(:publish_to_sg_started_at, Time.now)
+      self.update_columns :sg_survey_id => survey.id,
+                          :publish_to_sg_started_at => Time.now,
+                          :delete_from_sg_queued_at => nil,
+                          :delete_from_sg_started_at => nil,
+                          :delete_from_sg_completed_at => nil
     end
     self.survey_pages.select{|sp| sp.metadata['week'] == 'Week 1.5' }
                      .first(10).each(&:export_to_survey_gizmo!)
@@ -198,8 +204,17 @@ class SurveyIteration < ActiveRecord::Base
   end
   def delete_from_survey_gizmo!
     return false unless self.sg_survey_id.present?
+    puts "Deleting #{title} from Survey Gizmo!"
+    update_column :delete_from_sg_started_at, Time.now
+    self.survey_pages.published_to_sg.each(&:delete_from_survey_gizmo!)
     self.sg_survey.destroy
-    return true if self.new_record?
+    self.delete_from_sg_completed_at = Time.now
+    self.published_to_sg_at = nil
+    self.publish_to_sg_started_at = nil
+    self.publish_to_sg_queued_at = nil
+    self.publish_to_sg_cancelled_at = nil
+    self.sg_survey_id = nil
+    return true if new_record?
     self.save!
   end
 
@@ -224,6 +239,13 @@ class SurveyIteration < ActiveRecord::Base
       !published_to_sg? && !publish_to_sg_cancelled?; end
   def published_to_sg?; self.published_to_sg_at.present?; end
 
+  def delete_from_sg_queued?
+    !deleting_from_sg? && !deleted_from_sg? &&
+      delete_from_sg_queued_at.present?; end
+  def deleting_from_sg?
+    !deleted_from_sg? && delete_from_sg_started_at.present?; end
+  def deleted_from_sg?; delete_from_sg_completed_at.present?; end
+
   def publish_to_sg!
     # self.published_to_sg_at = Time.now
     self.publish_to_sg_queued_at = Time.now
@@ -242,15 +264,16 @@ class SurveyIteration < ActiveRecord::Base
     true
   end
   def delete_from_sg!
-    return false unless delete_from_survey_gizmo!
-    self.published_to_sg_at = nil
-    self.publish_to_sg_started_at = nil
-    self.publish_to_sg_queued_at = nil
-    self.publish_to_sg_cancelled_at = nil
-    self.save
+    self.delete_from_sg_queued_at = Time.now
+    return false unless self.save
+    job = DeleteFromSgJob.perform_later self
+    update_column :delete_from_sg_jid, job.job_id
+    true
   end
 
   def status
+    return 'Deleting' if deleting_from_sg?
+    return 'Queued for Deletion' if delete_from_sg_queued?
     return 'Published' if published_to_sg?
     return 'Publishing' if publishing_to_sg?
     return 'Cancelled Publishing' if publish_to_sg_cancelled?

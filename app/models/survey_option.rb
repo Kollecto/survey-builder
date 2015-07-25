@@ -5,6 +5,9 @@ class SurveyOption < ActiveRecord::Base
   belongs_to :survey_page
   belongs_to :survey_iteration
 
+  scope :published_to_sg, -> { where('survey_options.sg_option_id IS NOT NULL') }
+  scope :not_published_to_sg, -> { where('survey_options.sg_option_id IS NULL') }
+
   def sg_option
     return unless self.sg_option_id.present?
     SurveyGizmo::API::Option.first id: self.sg_option_id,
@@ -27,6 +30,14 @@ class SurveyOption < ActiveRecord::Base
     option = SurveyGizmo::API::Option.create sg_option_params
     if self.new_record? then self.sg_option_id = option.id
     else self.update_column(:sg_option_id, option.id) end
+  end
+  def delete_from_survey_gizmo!
+    return false unless self.sg_option.present?
+    puts "Deleting option from Survey Gizmo!"
+    self.sg_option.destroy
+    return true if new_record?
+    self.sg_option_id = nil
+    self.save
   end
 
 end

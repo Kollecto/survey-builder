@@ -7,14 +7,15 @@ module Admin::SurveyIterationsHelper
     else
       html_opts[:class] = classes_to_add
     end
-    content_tag(:span, html_opts) { "#{si.status} to Survey Gizmo" }
+    preposition = si.status.include?('Delet') ? 'from' : 'to'
+    content_tag(:span, html_opts) { "#{si.status} #{preposition} Survey Gizmo" }
   end
 
   def status_class_for_survey_iteration(si)
     case si.status
     when 'Published' then 'success'
     when 'Publishing' then 'info'
-    when 'Cancelled Publishing' then 'danger'
+    when 'Cancelled Publishing', 'Deleting' then 'danger'
     else 'default'
     end
   end

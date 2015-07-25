@@ -11,7 +11,6 @@ class PublishToSgJob < ActiveJob::Base
     Sidekiq.redis{|c| c.exists("cancelled-#{job_id}") }
   end
   def self.cancel!(jid)
-    puts 'I GOT CALLED!!'
     Sidekiq.redis{|c| c.setex("cancelled-#{jid}", 86400, 1) }
   end
 
