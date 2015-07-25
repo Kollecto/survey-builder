@@ -2,6 +2,24 @@
 = link_to iteration.title, [:admin, iteration]
 %br
 %small
-  Published
-  = time_ago_in_words iteration.created_at
-  ago
+  = succeed(',') { pluralize iteration.survey_pages.count, 'page' }
+  = succeed(',') { pluralize iteration.survey_questions.count, 'question' }
+  = pluralize iteration.survey_submissions.count, 'submission'
+  %br
+  - case iteration.status
+  - when 'Published'
+    Published
+    = time_ago_in_words iteration.published_to_sg_at
+    ago
+  - when 'Publishing'
+    Started publishing
+    = time_ago_in_words iteration.publish_to_sg_started_at
+    ago
+  - when 'Queued for Publishing'
+    Queued for publishing
+    = time_ago_in_words iteration.publish_to_sg_queued_at
+    ago
+  - when 'Not Published'
+    Imported from Google Drive
+    = time_ago_in_words iteration.created_at
+    ago

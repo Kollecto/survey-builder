@@ -11,20 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150723233009) do
+ActiveRecord::Schema.define(version: 20150724232443) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "survey_iterations", force: :cascade do |t|
     t.string   "title"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
     t.string   "sg_survey_id"
     t.text     "worksheet_header_row"
     t.datetime "published_to_sg_at"
     t.datetime "publish_to_sg_started_at"
     t.datetime "publish_to_sg_queued_at"
+    t.string   "sg_publishing_jid"
+    t.datetime "publish_to_sg_cancelled_at"
   end
 
   create_table "survey_options", force: :cascade do |t|

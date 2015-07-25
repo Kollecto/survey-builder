@@ -24,7 +24,7 @@
       = content_for :header_js
 
     = csrf_meta_tags
-  %body
+  %body{:class => "kollecto-#{on_dashboard? ? 'back' : 'front'}end"}
     = render 'shared/main_nav'
     - if content_for? :before_container
       = content_for :before_container

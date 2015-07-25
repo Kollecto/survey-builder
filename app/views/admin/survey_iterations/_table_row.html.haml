@@ -1,12 +1,19 @@
 %tr
   %td= render 'admin/survey_iterations/details_cell', :iteration => si
   %td.text-center
-    - if si.published_to_sg?
+    - case si.status
+    - when 'Published', 'Cancelled Publishing'
       = link_to [:delete_from_sg, :admin, si], method: :post,
         title: 'Delete from Survey Gizmo', data: {confirm: 'Are you sure?'},
         class: 'btn btn-xs btn-default has-tooltip delete-from-sg-btn' do
         %span.fa.fa-undo
-    - else
+    - when 'Queued for Publishing', 'Publishing'
+      = link_to [:cancel_publish_to_sg, :admin, si],
+        title: 'Cancel Publishing Job',
+        class: 'btn btn-xs btn-default has-tooltip cancel-publish-to-sg-btn',
+        method: :post, :data => {:confirm => 'Are you sure?'} do
+        %span.fa.fa-ban
+    - when 'Not Published'
       = link_to [:publish_to_sg, :admin, si], title: 'Publish to Survey Gizmo',
         class: 'btn btn-xs btn-default has-tooltip publish-to-sg-btn',
         method: :post, :data => {:confirm => 'Are you sure?'} do

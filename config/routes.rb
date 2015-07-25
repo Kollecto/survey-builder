@@ -5,8 +5,9 @@ Rails.application.routes.draw do
     get '/' => 'base#dashboard'
     resources :survey_iterations do
       member do
-        match 'publish_to_sg',  via: [:get, :post]
-        match 'delete_from_sg', via: [:get, :post]
+        post 'publish_to_sg'
+        post 'cancel_publish_to_sg'
+        post 'delete_from_sg'
       end
     end
     resources :users do

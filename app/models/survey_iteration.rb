@@ -15,6 +15,7 @@ class SurveyIteration < ActiveRecord::Base
 
   has_many :survey_pages
   has_many :survey_questions, :through => :survey_pages
+  has_many :survey_submissions
 
   before_validation :ensure_title_set
   before_validation :import_questions_from_google!, :on => [:create]
@@ -189,7 +190,8 @@ class SurveyIteration < ActiveRecord::Base
       self.update_column(:publish_to_sg_started_at, Time.now)
     end
     self.survey_pages.select{|sp| sp.metadata['week'] == 'Week 1.5' }
-                     .each(&:export_to_survey_gizmo!)
+                     .first(10).each(&:export_to_survey_gizmo!)
+    return false if self.reload.publish_to_sg_cancelled?
     self.published_to_sg_at = Time.now
     return true if self.new_record?
     self.save!
@@ -213,10 +215,13 @@ class SurveyIteration < ActiveRecord::Base
     instance
   end
 
-  def queued_for_publishing?
-    publish_to_sg_queued_at.present? && !publishing_to_sg?; end
+  def publish_to_sg_cancelled?; publish_to_sg_cancelled_at.present?; end
+  def publish_to_sg_queued?
+    publish_to_sg_queued_at.present? &&
+      !publishing_to_sg? && !publish_to_sg_cancelled?; end
   def publishing_to_sg?
-    publish_to_sg_started_at.present? && !published_to_sg?; end
+    publish_to_sg_started_at.present? &&
+      !published_to_sg? && !publish_to_sg_cancelled?; end
   def published_to_sg?; self.published_to_sg_at.present?; end
 
   def publish_to_sg!
@@ -224,19 +229,32 @@ class SurveyIteration < ActiveRecord::Base
     self.publish_to_sg_queued_at = Time.now
     # return false unless export_to_survey_gizmo!
     return false unless self.save
-    PublishToSgJob.perform_later self
+    job = PublishToSgJob.perform_later self
+    update_column :sg_publishing_jid, job.job_id
+    true
+  end
+  def cancel_publish_to_sg!
+    return false unless publishing_to_sg?
+    update_column :publish_to_sg_cancelled_at, Time.now
+    # self.publish_to_sg_cancelled_at = Time.now
+    # return false unless self.save
+    PublishToSgJob.cancel! self.sg_publishing_jid
     true
   end
   def delete_from_sg!
     return false unless delete_from_survey_gizmo!
     self.published_to_sg_at = nil
+    self.publish_to_sg_started_at = nil
+    self.publish_to_sg_queued_at = nil
+    self.publish_to_sg_cancelled_at = nil
     self.save
   end
 
   def status
     return 'Published' if published_to_sg?
     return 'Publishing' if publishing_to_sg?
-    return 'Queued for Publishing' if queued_for_publishing?
+    return 'Cancelled Publishing' if publish_to_sg_cancelled?
+    return 'Queued for Publishing' if publish_to_sg_queued?
     'Not Published'
   end
 

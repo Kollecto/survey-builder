@@ -29,3 +29,13 @@ input.radio_buttons[type=radio] {
   @media (max-width: $screen-xs-max) { padding-top: 20px; }
 }
 
+body.kollecto-frontend { }
+body.kollecto-backend {
+  .page-header {
+    margin-top: 20px;
+    .btn { margin-top: 3px; }
+  }
+  .form-frame {
+    @media (max-width: $screen-sm-max) { padding-top: 20px; }
+  }
+}

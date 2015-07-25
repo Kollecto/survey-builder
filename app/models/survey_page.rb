@@ -58,6 +58,7 @@ class SurveyPage < ActiveRecord::Base
     }.dup.merge(metadata.present? ? metadata[:sg_params] || {} : {})
   end
   def export_to_survey_gizmo!
+    return false if survey_iteration.publish_to_sg_cancelled?
     puts "Exporting survey page!"
     page = SurveyGizmo::API::Page.create sg_page_params
     if self.new_record? then self.sg_page_id = page.id
