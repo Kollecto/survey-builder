@@ -14,7 +14,7 @@ badd +122 ~/dotfiles/vim/.vimrc.ruby
 badd +5 config/database.yml
 badd +19 app/controllers/application_controller.rb
 badd +4 db/migrate/20150721215149_add_stuff_to_users.rb
-badd +54 config/routes.rb
+badd +22 config/routes.rb
 badd +18 app/controllers/survey_submissions_controller.rb
 badd +3 app/views/survey_submissions/start.html.haml
 badd +26 app/models/ability.rb
@@ -30,7 +30,7 @@ badd +7 app/views/home/home.html.haml
 badd +24 app/models/survey_submission.rb
 badd +12 app/views/devise/sessions/new.html.haml
 badd +19 db/schema.rb
-badd +16 app/models/survey_iteration.rb
+badd +152 app/models/survey_iteration.rb
 badd +2 app/controllers/survey_questions_controller.rb
 badd +1 spec/models/survey_page_spec.rb
 badd +16 app/models/survey_page.rb
@@ -57,7 +57,7 @@ badd +8 app/views/admin/users/_details_cell.html.haml
 badd +7 app/views/admin/users/edit.html.haml
 badd +10 app/views/admin/users/show.html.haml
 badd +3 app/assets/javascripts/admin/survey_iterations.coffee
-badd +10 app/controllers/admin/survey_iterations_controller.rb
+badd +14 app/controllers/admin/survey_iterations_controller.rb
 badd +7 app/views/admin/survey_iterations/index.html.haml
 badd +1 app/views/admin/survey_iterations/_table.html.haml
 badd +2 app/views/admin/survey_iterations/_table_row.html.haml
@@ -67,11 +67,11 @@ badd +35 app/models/survey_option.rb
 badd +13 app/jobs/publish_to_sg_job.rb
 badd +1 config/initializers/active_job.rb
 badd +2 app/views/admin/survey_iterations/new.html.haml
-badd +9 app/views/admin/survey_iterations/_form.html.haml
+badd +6 app/views/admin/survey_iterations/_form.html.haml
 badd +4 app/views/admin/survey_iterations/edit.html.haml
 badd +3 app/assets/javascripts/shared.coffee
 badd +1 app/controllers/survey_iterations_controller.rb
-badd +29 app/views/admin/survey_iterations/show.html.haml
+badd +1 app/views/admin/survey_iterations/show.html.haml
 badd +5 db/migrate/20150724232443_add_sg_publishing_jid_to_survey_iterations.rb
 badd +1 app/helpers/survey_iterations_helper.rb
 badd +2 app/jobs/delete_from_sg_job.rb
@@ -79,10 +79,10 @@ badd +6 db/migrate/20150725002217_add_deletion_datetimes_to_survey_iterations.rb
 badd +11 app/jobs/import_from_google_drive_job.rb
 badd +1 app/controllers/survey_pages_controller.rb
 badd +12 app/controllers/admin/survey_pages_controller.rb
-badd +15 app/views/admin/survey_pages/index.html.haml
-badd +10 app/views/admin/survey_pages/_table.html.haml
-badd +4 app/views/admin/survey_pages/_table_row.html.haml
-badd +3 app/views/admin/survey_pages/_details_cell.html.haml
+badd +1 app/views/admin/survey_pages/index.html.haml
+badd +1 app/views/admin/survey_pages/_table.html.haml
+badd +1 app/views/admin/survey_pages/_table_row.html.haml
+badd +1 app/views/admin/survey_pages/_details_cell.html.haml
 badd +7 app/controllers/admin/survey_questions_controller.rb
 badd +11 app/views/admin/survey_questions/index.html.haml
 badd +11 app/views/admin/survey_questions/_table.html.haml
@@ -94,6 +94,12 @@ badd +12 app/views/admin/survey_options/_table.html.haml
 badd +2 app/views/admin/survey_options/_table_row.html.haml
 badd +2 app/views/admin/survey_options/_details_cell.html.haml
 badd +10 db/migrate/20150725221113_change_google_auth_token_to_google_access_token_for_users.rb
+badd +6 app/controllers/admin/survey_submissions_controller.rb
+badd +15 app/views/admin/survey_submissions/index.html.haml
+badd +9 app/views/admin/survey_submissions/_table.html.haml
+badd +1 app/views/admin/survey_submissions/_table_row.html.haml
+badd +5 app/views/admin/survey_submissions/_details_cell.html.haml
+badd +23 app/views/admin/survey_pages/show.html.haml
 argglobal
 silent! argdel *
 edit app/views/admin/survey_iterations/_details_cell.html.haml
@@ -133,9 +139,9 @@ exe '3resize ' . ((&lines * 30 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
 exe '4resize ' . ((&lines * 30 + 31) / 62)
 exe 'vert 4resize ' . ((&columns * 90 + 136) / 272)
-exe '5resize ' . ((&lines * 20 + 31) / 62)
+exe '5resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 90 + 136) / 272)
-exe '6resize ' . ((&lines * 19 + 31) / 62)
+exe '6resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
 exe '7resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)
@@ -175,7 +181,7 @@ normal! zt
 normal! 05|
 wincmd w
 argglobal
-edit app/models/survey_iteration.rb
+edit app/views/survey_submissions/take_survey.html.haml
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -185,29 +191,29 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 157 - ((14 * winheight(0) + 15) / 30)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-157
-normal! 021|
-wincmd w
-argglobal
-edit app/controllers/admin/survey_iterations_controller.rb
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 14 - ((7 * winheight(0) + 15) / 30)
+let s:l = 14 - ((12 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 14
+normal! 043|
+wincmd w
+argglobal
+edit app/controllers/admin/survey_pages_controller.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 47 - ((24 * winheight(0) + 15) / 30)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+47
 normal! 0
 wincmd w
 argglobal
@@ -221,7 +227,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 31 - ((15 * winheight(0) + 10) / 20)
+let s:l = 31 - ((15 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -229,7 +235,7 @@ normal! zt
 normal! 015|
 wincmd w
 argglobal
-edit app/views/admin/survey_iterations/_form.html.haml
+edit app/views/admin/survey_pages/show.html.haml
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -239,15 +245,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 9 - ((5 * winheight(0) + 9) / 19)
+let s:l = 13 - ((12 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9
-normal! 033|
+13
+normal! 05|
 wincmd w
 argglobal
-edit app/controllers/application_controller.rb
+edit app/models/survey_submission.rb
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -257,14 +263,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 19 - ((15 * winheight(0) + 9) / 19)
+let s:l = 20 - ((16 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-19
-normal! 017|
+20
+normal! 036|
 wincmd w
-6wincmd w
+4wincmd w
 exe '1resize ' . ((&lines * 29 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 90 + 136) / 272)
 exe '2resize ' . ((&lines * 29 + 31) / 62)
@@ -273,9 +279,9 @@ exe '3resize ' . ((&lines * 30 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
 exe '4resize ' . ((&lines * 30 + 31) / 62)
 exe 'vert 4resize ' . ((&columns * 90 + 136) / 272)
-exe '5resize ' . ((&lines * 20 + 31) / 62)
+exe '5resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 90 + 136) / 272)
-exe '6resize ' . ((&lines * 19 + 31) / 62)
+exe '6resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
 exe '7resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)

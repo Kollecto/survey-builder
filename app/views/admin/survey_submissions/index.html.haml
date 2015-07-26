@@ -1,0 +1,19 @@
+= admin_frame do
+  .page-header
+    %h1
+      - case @by
+      - when 'iteration'
+        = link_to @iteration.title, [:admin, @iteration]
+        %br
+        %small
+          Submissions (#{@iteration.survey_submissions.count})
+      - else
+        Survey Submissions (#{@survey_submissions.unscoped.count})
+  = render_flash_messages!
+
+  - if @survey_submissions.any?
+    = render 'table', :survey_submissions => @survey_submissions
+  - else
+    .jumbotron.text-center
+      %h1 Nothing to display.
+      %p There are no submissions to show you.

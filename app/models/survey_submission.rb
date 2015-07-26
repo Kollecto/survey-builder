@@ -15,6 +15,10 @@ class SurveySubmission < ActiveRecord::Base
 
   scope :completed, -> { where('survey_submissions.completed_at IS NOT NULL') }
   scope :not_completed, -> { where('survey_submissions.completed_at IS NULL') }
+  
+  def title
+    "#{user.first_name}'s Submission"
+  end
 
   def completed?; completed_at.present?; end
 

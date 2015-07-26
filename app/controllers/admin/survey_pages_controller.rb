@@ -19,6 +19,8 @@ module Admin
     end
 
     def show
+      @questions = @survey_page.survey_questions.order(updated_at: :desc)
+                                                .limit(5)
     end
 
     def edit
@@ -33,6 +35,7 @@ module Admin
     private
     def fetch_iteration
       @iteration = if params.key? :survey_iteration_id
+                     @by ||= 'iteration'
                      SurveyIteration.find params[:survey_iteration_id]
                    elsif @survey_page.present?
                      @survey_page.survey_iteration
