@@ -27,7 +27,7 @@ badd +35 app/views/shared/_main_nav.html.haml
 badd +45 app/assets/stylesheets/bootstrap-overrides.scss
 badd +18 app/views/layouts/application.html.haml
 badd +7 app/views/home/home.html.haml
-badd +24 app/models/survey_submission.rb
+badd +13 app/models/survey_submission.rb
 badd +12 app/views/devise/sessions/new.html.haml
 badd +19 db/schema.rb
 badd +152 app/models/survey_iteration.rb
@@ -99,7 +99,7 @@ badd +15 app/views/admin/survey_submissions/index.html.haml
 badd +9 app/views/admin/survey_submissions/_table.html.haml
 badd +1 app/views/admin/survey_submissions/_table_row.html.haml
 badd +5 app/views/admin/survey_submissions/_details_cell.html.haml
-badd +23 app/views/admin/survey_pages/show.html.haml
+badd +26 app/views/admin/survey_pages/show.html.haml
 argglobal
 silent! argdel *
 edit app/views/admin/survey_iterations/_details_cell.html.haml
@@ -155,7 +155,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 25 - ((23 * winheight(0) + 14) / 29)
+let s:l = 25 - ((17 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -173,12 +173,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 59 - ((18 * winheight(0) + 14) / 29)
+let s:l = 19 - ((18 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-59
-normal! 05|
+19
+normal! 034|
 wincmd w
 argglobal
 edit app/views/survey_submissions/take_survey.html.haml
@@ -191,12 +191,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 14 - ((12 * winheight(0) + 15) / 30)
+let s:l = 15 - ((13 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-14
-normal! 043|
+15
+normal! 025|
 wincmd w
 argglobal
 edit app/controllers/admin/survey_pages_controller.rb
@@ -209,11 +209,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 47 - ((24 * winheight(0) + 15) / 30)
+let s:l = 34 - ((11 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-47
+34
 normal! 0
 wincmd w
 argglobal
@@ -227,15 +227,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 31 - ((15 * winheight(0) + 9) / 19)
+let s:l = 19 - ((0 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 015|
+19
+normal! 017|
 wincmd w
 argglobal
-edit app/views/admin/survey_pages/show.html.haml
+edit app/views/admin/survey_iterations/_table_row.html.haml
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -245,32 +245,32 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 13 - ((12 * winheight(0) + 10) / 20)
+let s:l = 21 - ((7 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-13
+21
+normal! 0
+wincmd w
+argglobal
+edit app/models/survey_iteration.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 169 - ((5 * winheight(0) + 9) / 19)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+169
 normal! 05|
 wincmd w
-argglobal
-edit app/models/survey_submission.rb
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 20 - ((16 * winheight(0) + 9) / 19)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-20
-normal! 036|
-wincmd w
-4wincmd w
+6wincmd w
 exe '1resize ' . ((&lines * 29 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 90 + 136) / 272)
 exe '2resize ' . ((&lines * 29 + 31) / 62)

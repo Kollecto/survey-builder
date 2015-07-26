@@ -1,18 +1,24 @@
 %tr
   %td= render 'admin/survey_iterations/details_cell', :iteration => si
   %td.text-center
-    - case si.gd_status
-    - when 'Imported', 'Failed to Import'
-      = link_to [:reimport_from_gd, :admin, si],
-        title: 'Reimport from Google Drive',
-        class: 'btn btn-xs btn-default has-tooltip reimport-from-gd-btn',
-        method: :post, :data => {:confirm => 'Are you sure?'} do
-        %span.glyphicon.glyphicon-import
-    - when 'Not Imported'
-      = link_to [:import_from_gd, :admin, si], title: 'Import from Google Drive',
-        class: 'btn btn-xs btn-default has-tooltip import-from-gd-btn',
-        method: :post, :data => {:confirm => 'Are you sure?'} do
-        %span.glyphicon.glyphicon-save
+    - if si.google_worksheet_url.present?
+      = link_to si.google_worksheet_url, :target => '_blank',
+        title: 'Go to Spreadsheet',
+        class: 'btn btn-xs btn-default has-tooltip goto-gd-btn' do
+        %span.fa.fa-table
+      - case si.gd_status
+      - when 'Imported', 'Failed to Import'
+        = link_to [:reimport_from_gd, :admin, si],
+          title: 'Reimport from Google Drive',
+          class: 'btn btn-xs btn-default has-tooltip reimport-from-gd-btn',
+          method: :post, :data => {:confirm => 'Are you sure?'} do
+          %span.glyphicon.glyphicon-import
+      - when 'Not Imported'
+        = link_to [:import_from_gd, :admin, si], title: 'Import from Google Drive',
+          class: 'btn btn-xs btn-default has-tooltip import-from-gd-btn',
+          method: :post, :data => {:confirm => 'Are you sure?'} do
+          %span.glyphicon.glyphicon-save
+
     - case si.sg_status
     - when 'Published', 'Cancelled Publishing'
       = link_to [:delete_from_sg, :admin, si], method: :post,

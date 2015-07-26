@@ -160,7 +160,7 @@ class SurveyIteration < ActiveRecord::Base
   def google_spreadsheet
     return if self.google_spreadsheet_id.nil?
     self.creator.google_spreadsheets.find{|ss|
-             self.google_spreadsheet_id == ss.id}
+             self.google_spreadsheet_id == ss.id }
   end
   def google_worksheet
     return if self.google_spreadsheet_id.nil? || self.google_worksheet_url.nil?
@@ -170,8 +170,9 @@ class SurveyIteration < ActiveRecord::Base
 
   def import_questions_from_google
     puts 'Importing from Google!'
-    update_column :import_from_google_started_at, Time.now
     ws = self.google_worksheet
+    return false if ws.nil?
+    update_column :import_from_google_started_at, Time.now
     rows = ws.rows
     self.worksheet_header_row = rows.first
     rows[1..-1].each do |cells|
