@@ -11,15 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150725230637) do
+ActiveRecord::Schema.define(version: 20150730195435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "survey_iterations", force: :cascade do |t|
     t.string   "title"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                                                     null: false
+    t.datetime "updated_at",                                                     null: false
     t.string   "sg_survey_id"
     t.text     "worksheet_header_row"
     t.datetime "published_to_sg_at"
@@ -39,6 +39,14 @@ ActiveRecord::Schema.define(version: 20150725230637) do
     t.string   "google_spreadsheet_id"
     t.string   "google_worksheet_url"
     t.datetime "import_from_google_failed_at"
+    t.integer  "google_worksheet_header_row_index",                  default: 0
+    t.integer  "google_worksheet_filtering_column_index"
+    t.string   "google_worksheet_filtering_column_value"
+    t.integer  "google_worksheet_art_attributes_start_column_index"
+    t.integer  "google_worksheet_art_attributes_end_column_index"
+    t.datetime "deletion_queued_at"
+    t.datetime "deletion_started_at"
+    t.datetime "deletion_failed_at"
   end
 
   create_table "survey_options", force: :cascade do |t|

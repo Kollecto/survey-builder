@@ -17,7 +17,7 @@ class SurveyPage < ActiveRecord::Base
 
   def fetch_title_and_desc_from_metadata
     return unless self.metadata.present?
-    self.title ||= self.metadata['title-by-artist']
+    self.title ||= self.metadata['name-by-artist']
     self.description ||= "<img alt='' src='#{self.metadata['image-url']}' /><br style='line-height:22.4000015258789px;' /><br style='line-height:22.4000015258789px;' /><span style='font-size:18px;'><span style='font-family:Calibri;'>#{self.metadata['medium-size-edition-price']}</span></span><br /><br style='line-height:22.4000015258789px;' /><strong style='line-height:22.3999996185303px;'><a href='http://buy.artkollecto.com'>buy.artkollecto.com</a></strong>"
     # self.description += "<script type='text/javascript'>alert('hi!');</script>" (:
   end
@@ -38,8 +38,8 @@ class SurveyPage < ActiveRecord::Base
       # :parent_question => q1,
       # :parent_question_dependency => 'Yes',
       :question_type => 'checkbox',
-      :survey_options_attributes => taste_options.map{|to| {
-        :title => to.capitalize, :reporting_value => to.capitalize } }
+      :survey_options_attributes => art_attributes.map{|aa| {
+        :title => aa.capitalize, :reporting_value => aa.capitalize } }
     # self.survey_questions.build :survey_iteration => self.survey_iteration,
     #                             :title => 'DISLIKED because...',
     #                             :previous_question => q2,
@@ -47,8 +47,8 @@ class SurveyPage < ActiveRecord::Base
     #                             :parent_question_dependency => 'No'
   end
 
-  def taste_options
-    self.survey_iteration.worksheet_header_row[14..-1].select{|heading|
+  def art_attributes
+    self.survey_iteration.art_attribute_columns.select{|heading|
       !heading.blank? && self.metadata[heading] == 'x' }
   end
 

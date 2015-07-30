@@ -7,6 +7,50 @@
         = survey_iteration_gd_status_label @survey_iteration
         = survey_iteration_sg_status_label @survey_iteration
 
+  - if @survey_iteration.preparing_to_import_from_google?
+    .panel.panel-default.google-drive-import-settings-panel
+      .panel-heading
+        %h2.panel-title
+          Google Drive Import Settings
+      .panel-body
+        = simple_form_for [:admin, @survey_iteration] do |f|
+          = f.input :google_worksheet_header_row_index, selected: '',
+            collection: @survey_iteration.google_worksheet.rows.map.with_index{|cells, i| [ "Row #{i+1}: #{cells.first(5).join(', ')}...", i, { 'data-cells' => cells.to_json } ] },
+            include_blank: 'Please select a row to serve as the header...',
+            label: 'Header Row', required: true,
+            hint: 'All rows below the specified row will be imported as survey pages.'
+          .row.google-worksheet-art-attributes-inputs{:style => 'display:none'}
+            .col-md-12
+              %hr
+              %h3.lead Art Attributes Columns
+              %hr
+            .col-md-6
+              = f.input :google_worksheet_art_attributes_start_column_index,
+                label: 'First Art Attribute Column', collection: [],
+                include_blank: 'Please select the first column that serves as an art attribute column...'
+            .col-md-6
+              = f.input :google_worksheet_art_attributes_end_column_index,
+                label: 'Last Art Attribute Column', collection: [],
+                include_blank: 'Please select the last column that serves as an art attribute column...'
+          .row.google-worksheet-filtering-inputs{:style => 'display:none'}
+            .col-md-12
+              %hr
+              %h3.lead Filtering
+              %hr
+            .col-md-6
+              = f.input :google_worksheet_filtering_column_index, collection: [],
+                label: 'Filtering Column',
+                include_blank: 'Optionally select a column to use for filtering...',
+                hint: 'This allows the range of data to import to be customized.'
+            .col-md-6
+              = f.input :google_worksheet_filtering_column_value,
+                label: 'Filtering Column Value',
+                placeholder: 'Optionally specify a value to use for filtering...',
+                hint: 'The value specified will be used to select rows to be imported.'
+          %hr
+          = f.submit 'Begin Import from Google Drive',
+            class: 'btn btn-success btn-lg btn-block'
+
   - if @pages.any?
     .panel.panel-default
       .panel-heading

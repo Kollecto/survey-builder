@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   validates_presence_of :first_name
 
   scope :admins,      -> { where(:role => 'Admin') }
-  scope :nonadmins,   -> { where('users.role != ?', 'Admin')  }
+  scope :nonadmins,   -> { where('users.role != ?', 'Admin') }
 
   def admin?; self.role == 'Admin'; end
 
