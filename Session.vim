@@ -176,7 +176,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 5 - ((4 * winheight(0) + 9) / 19)
+let s:l = 5 - ((1 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -194,12 +194,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 16 - ((15 * winheight(0) + 10) / 20)
+let s:l = 10 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
-normal! 05|
+10
+normal! 037|
 wincmd w
 argglobal
 edit app/controllers/admin/survey_iterations_controller.rb
@@ -273,7 +273,7 @@ normal! zt
 153
 normal! 07|
 wincmd w
-3wincmd w
+2wincmd w
 exe '1resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 90 + 136) / 272)
 exe '2resize ' . ((&lines * 19 + 31) / 62)

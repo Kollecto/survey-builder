@@ -21,27 +21,27 @@
             method: :post, :data => {:confirm => 'Are you sure?'} do
             %span.glyphicon.glyphicon-save
 
-    - case si.sg_status
-    - when 'Published', 'Cancelled Publishing'
-      = link_to [:delete_from_sg, :admin, si], method: :post,
-        title: 'Delete from Survey Gizmo', data: {confirm: 'Are you sure?'},
-        class: 'btn btn-xs btn-default has-tooltip delete-from-sg-btn' do
-        %span.fa.fa-undo
-    - when 'Queued for Publishing', 'Publishing'
-      = link_to [:cancel_publish_to_sg, :admin, si],
-        title: 'Cancel Publishing Job',
-        class: 'btn btn-xs btn-default has-tooltip cancel-publish-to-sg-btn',
-        method: :post, :data => {:confirm => 'Are you sure?'} do
-        %span.fa.fa-ban
-    - when 'Not Published'
-      = link_to [:publish_to_sg, :admin, si], title: 'Publish to Survey Gizmo',
-        class: 'btn btn-xs btn-default has-tooltip publish-to-sg-btn',
-        method: :post, :data => {:confirm => 'Are you sure?'} do
-        %span.glyphicon.glyphicon-send
-    = link_to [:edit, :admin, si], title: 'Edit Iteration',
-      class: 'btn btn-xs btn-default has-tooltip edit-btn' do
-      %span.glyphicon.glyphicon-edit
-    = link_to [:admin, si], title: 'Delete Iteration', method: :delete,
-      class: 'btn btn-xs btn-default has-tooltip delete-btn',
-      data: { confirm: 'Are you sure?' } do
-      %span.glyphicon.glyphicon-trash
+      - case si.sg_status
+      - when 'Published', 'Cancelled Publishing'
+        = link_to [:delete_from_sg, :admin, si], method: :post,
+          title: 'Delete from Survey Gizmo', data: {confirm: 'Are you sure?'},
+          class: 'btn btn-xs btn-default has-tooltip delete-from-sg-btn' do
+          %span.fa.fa-undo
+      - when 'Queued for Publishing', 'Publishing'
+        = link_to [:cancel_publish_to_sg, :admin, si],
+          title: 'Cancel Publishing Job',
+          class: 'btn btn-xs btn-default has-tooltip cancel-publish-to-sg-btn',
+          method: :post, :data => {:confirm => 'Are you sure?'} do
+          %span.fa.fa-ban
+      - when 'Not Published'
+        = link_to [:publish_to_sg, :admin, si], title: 'Publish to Survey Gizmo',
+          class: 'btn btn-xs btn-default has-tooltip publish-to-sg-btn',
+          method: :post, :data => {:confirm => 'Are you sure?'} do
+          %span.glyphicon.glyphicon-send
+      = link_to [:edit, :admin, si], title: 'Edit Iteration',
+        class: 'btn btn-xs btn-default has-tooltip edit-btn' do
+        %span.glyphicon.glyphicon-edit
+      = link_to [:admin, si], title: 'Delete Iteration', method: :delete,
+        class: 'btn btn-xs btn-default has-tooltip delete-btn',
+        data: { confirm: 'Are you sure?' } do
+        %span.glyphicon.glyphicon-trash
