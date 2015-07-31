@@ -32,8 +32,13 @@ class SurveySubmissionsController < ApplicationController
     else
       @survey_page = @survey_submission.current_page
     end
-    @prev_page = @survey_page.prev_page
-    @next_page = @survey_page.next_page
+    if @survey_page.present?
+      @prev_page = @survey_page.prev_page
+      @next_page = @survey_page.next_page
+    else
+      flash[:error] = 'The survey you\'re trying to take has no pages.'
+      redirect_to root_path
+    end
   end
 
   private
