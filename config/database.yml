@@ -84,4 +84,4 @@ staging:
 #
 production:
   <<: *default
-  database: kollecto_survey-builder_production
+  database: kollecto_survey_builder_production
