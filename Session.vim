@@ -9,9 +9,9 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +10 app/models/user.rb
-badd +27 config/secrets.yml
+badd +13 config/secrets.yml
 badd +122 ~/dotfiles/vim/.vimrc.ruby
-badd +5 config/database.yml
+badd +86 config/database.yml
 badd +19 app/controllers/application_controller.rb
 badd +4 db/migrate/20150721215149_add_stuff_to_users.rb
 badd +22 config/routes.rb
@@ -40,7 +40,7 @@ badd +26 app/controllers/home_controller.rb
 badd +81 config/environments/production.rb
 badd +37 Gemfile
 badd +22 Capfile
-badd +34 config/deploy/staging.rb
+badd +10 config/deploy/staging.rb
 badd +12 config/deploy.rb
 badd +30 config/application.rb
 badd +87 config/environments/staging.rb
@@ -104,14 +104,21 @@ badd +32 app/assets/javascripts/survey_iterations.coffee
 badd +3 db/migrate/20150730185939_add_google_worksheet_stuff_to_survey_iterations.rb
 badd +5 app/jobs/delete_survey_iteration_job.rb
 badd +2 config/initializers/bypass_ssl_verification_for_open_uri.rb
+badd +10 config/deploy/production.rb
 argglobal
 silent! argdel *
-edit config/database.yml
+edit config/deploy/production.rb
 set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
+exe 'vert 1resize ' . ((&columns * 102 + 102) / 204)
+exe 'vert 2resize ' . ((&columns * 101 + 102) / 204)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -122,12 +129,33 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 24) / 49)
+let s:l = 10 - ((9 * winheight(0) + 24) / 49)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+10
+normal! 01|
+wincmd w
+argglobal
+edit config/environments/production.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 75 - ((30 * winheight(0) + 24) / 49)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+75
+normal! 023|
+wincmd w
+exe 'vert 1resize ' . ((&columns * 102 + 102) / 204)
+exe 'vert 2resize ' . ((&columns * 101 + 102) / 204)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
