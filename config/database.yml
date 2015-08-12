@@ -84,6 +84,4 @@ staging:
 #
 production:
   <<: *default
-  database: kollecto-survey-builder_production
-  username: kollecto-survey-builder
-  password: <%= ENV['KOLLECTO-SG-SURVEY-BUILDER_DATABASE_PASSWORD'] %>
+  database: kollecto_survey-builder_production
