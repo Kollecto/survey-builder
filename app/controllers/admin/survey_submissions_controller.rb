@@ -15,6 +15,15 @@ module Admin
     def show
     end
 
+    def destroy
+      if @survey_submission.destroy
+        flash[:info] = 'The submission has been deleted.'
+      else
+        flash[:error] = 'The submission could not be deleted!'
+      end
+      redirect_to admin_survey_submissions_path
+    end
+
     private
     def fetch_iteration
       @iteration = if params.key? :survey_iteration_id

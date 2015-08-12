@@ -78,7 +78,7 @@ badd +2 app/jobs/delete_from_sg_job.rb
 badd +6 db/migrate/20150725002217_add_deletion_datetimes_to_survey_iterations.rb
 badd +11 app/jobs/import_from_google_drive_job.rb
 badd +1 app/controllers/survey_pages_controller.rb
-badd +13 app/controllers/admin/survey_pages_controller.rb
+badd +31 app/controllers/admin/survey_pages_controller.rb
 badd +1 app/views/admin/survey_pages/index.html.haml
 badd +1 app/views/admin/survey_pages/_table.html.haml
 badd +1 app/views/admin/survey_pages/_table_row.html.haml
@@ -94,7 +94,7 @@ badd +12 app/views/admin/survey_options/_table.html.haml
 badd +2 app/views/admin/survey_options/_table_row.html.haml
 badd +2 app/views/admin/survey_options/_details_cell.html.haml
 badd +10 db/migrate/20150725221113_change_google_auth_token_to_google_access_token_for_users.rb
-badd +6 app/controllers/admin/survey_submissions_controller.rb
+badd +19 app/controllers/admin/survey_submissions_controller.rb
 badd +15 app/views/admin/survey_submissions/index.html.haml
 badd +9 app/views/admin/survey_submissions/_table.html.haml
 badd +1 app/views/admin/survey_submissions/_table_row.html.haml
@@ -107,18 +107,38 @@ badd +2 config/initializers/bypass_ssl_verification_for_open_uri.rb
 badd +10 config/deploy/production.rb
 argglobal
 silent! argdel *
-edit config/deploy/production.rb
+edit config/deploy.rb
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
 1wincmd h
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
+wincmd w
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
 wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 102 + 136) / 272)
-exe 'vert 2resize ' . ((&columns * 169 + 136) / 272)
+exe '1resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 90 + 136) / 272)
+exe '2resize ' . ((&lines * 40 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 90 + 136) / 272)
+exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
+exe '4resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 90 + 136) / 272)
+exe '5resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 5resize ' . ((&columns * 181 + 136) / 272)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -129,11 +149,65 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 11 - ((6 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+11
+normal! 0
+wincmd w
+argglobal
+edit config/deploy/production.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 10 - ((6 * winheight(0) + 20) / 40)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+10
+normal! 056|
+wincmd w
+argglobal
+edit app/controllers/admin/survey_iterations_controller.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 38 - ((21 * winheight(0) + 15) / 30)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+38
+normal! 046|
+wincmd w
+argglobal
+edit app/controllers/admin/survey_submissions_controller.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 19 - ((18 * winheight(0) + 15) / 30)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+19
 normal! 0
 wincmd w
 argglobal
@@ -147,15 +221,24 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 75 - ((38 * winheight(0) + 30) / 60)
+let s:l = 81 - ((1 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-75
-normal! 023|
+81
+normal! 012|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 102 + 136) / 272)
-exe 'vert 2resize ' . ((&columns * 169 + 136) / 272)
+4wincmd w
+exe '1resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 90 + 136) / 272)
+exe '2resize ' . ((&lines * 40 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 90 + 136) / 272)
+exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
+exe '4resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 90 + 136) / 272)
+exe '5resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 5resize ' . ((&columns * 181 + 136) / 272)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
